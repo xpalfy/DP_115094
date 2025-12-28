@@ -1,0 +1,6 @@
+train: /Users/palfy/Desktop/STU FEI/2. Ročník/1. Semester/Diplomový projekt 1/DP_115094/dataset/v4.4/train/images
+val: /Users/palfy/Desktop/STU FEI/2. Ročník/1. Semester/Diplomový projekt 1/DP_115094/dataset/v4.4/val/images
+test: /Users/palfy/Desktop/STU FEI/2. Ročník/1. Semester/Diplomový projekt 1/DP_115094/dataset/v4.4/test/images
+
+nc: 20
+names: ['a','b','c','d','e','f','g','h','i','l','m','n','o','r','s','t','u','v','w','z']
