@@ -10,6 +10,7 @@ import {
   setUseSahi,
   setConfidence,
   toggleSahi,
+  setUsePolygon,
 } from "../features/ui/uiSlice";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
@@ -31,6 +32,7 @@ const Layout = () => {
     dispatch(clearImage());
     dispatch(closeSidebar());
     dispatch(setUseSahi(false));
+    dispatch(setUsePolygon(false));
     dispatch(setConfidence(50));
     switch (location.pathname) {
       case "/yolo8":

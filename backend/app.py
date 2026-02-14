@@ -4,6 +4,7 @@ import yaml
 import pytesseract
 import easyocr
 import random
+import numpy as np
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from ultralytics import YOLO
@@ -66,7 +67,6 @@ best_model = YOLO("runs/yolo11/segment/train_yolo11l_seg/v5_yolo11l_seg/weights/
 
 ALLOWED_VERSIONS = {"v4.1","v4", "v5"}
 
-
 def get_dataset_dir(version: str) -> str:
     if version not in ALLOWED_VERSIONS:
         version = "v4"
@@ -92,6 +92,7 @@ def load_class_names(version: str):
         raise ValueError(f"'names' missing in {yaml_path}")
 
     return names
+
 
 # ===================================================
 # AVERAGE IMAGES
@@ -133,9 +134,11 @@ def get_average_images():
         "images": images
     })
 
+
 # ===================================================
 # DATASET IMAGE SERVING
 # ===================================================
+
 @app.route("/dataset/images/<path:filename>")
 def serve_dataset_image(filename):
     split = request.args.get("split", "train")
@@ -156,6 +159,7 @@ def serve_dataset_image(filename):
 # ===================================================
 # SAMPLE IMAGES
 # ===================================================
+
 @app.route("/sample_images", methods=["GET"])
 def get_sample_images():
     num = int(request.args.get("num", 6))
@@ -237,10 +241,39 @@ def get_sample_images():
         "images": results
     })
 
+
 # ===================================================
 # SAHI
 # ===================================================
-def run_sahi_inference(model_path, image_path, model_type="yolov8", conf=0.5):
+
+def sahi_mask_to_polygon(det, min_area=20):
+    m = getattr(det, "mask", None)
+    if m is None:
+        return None
+
+    bool_mask = getattr(m, "bool_mask", None)
+    if bool_mask is None and hasattr(m, "to_bool_mask"):
+        try:
+            bool_mask = m.to_bool_mask()
+        except Exception:
+            return None
+    if bool_mask is None:
+        return None
+
+    bm = (np.asarray(bool_mask, dtype=np.uint8) * 255)
+
+    contours, _ = cv2.findContours(bm, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if not contours:
+        return None
+
+    best = max(contours, key=cv2.contourArea)
+    if cv2.contourArea(best) < min_area:
+        return None
+
+    return best.reshape(-1, 2).astype(float).tolist()
+
+
+def run_sahi_inference(model_path, image_path, model_type="yolov8", conf=0.5, use_polygon=False):
     detection_model = AutoDetectionModel.from_pretrained(
         model_type=model_type,
         model_path=model_path,
@@ -254,16 +287,18 @@ def run_sahi_inference(model_path, image_path, model_type="yolov8", conf=0.5):
     for det in result.object_prediction_list:
         x1, y1, x2, y2 = det.bbox.to_xyxy()
 
-        detections.append({
+        out = {
             "class": str(det.category.name),
             "confidence": float(det.score.value),
-            "bbox": [
-                float(x1),
-                float(y1),
-                float(x2),
-                float(y2),
-            ]
-        })
+            "bbox": [float(x1), float(y1), float(x2), float(y2)]
+        }
+
+        if use_polygon:
+            poly = sahi_mask_to_polygon(det)
+            if poly is not None:
+                out["polygon"] = poly
+
+        detections.append(out)
 
     return detections
 
@@ -280,6 +315,7 @@ def detect_handler():
     file = request.files["file"]
     mode = request.form.get("mode", "yolo11n")
     use_sahi = request.form.get("useSAHI", "false").lower() == "true"
+    use_polygon = request.form.get("usePolygon", "false").lower() == "true"
     confidence = float(request.form.get("confidence", 50)) / 100.0
 
     os.makedirs("uploads", exist_ok=True)
@@ -370,14 +406,17 @@ def detect_handler():
             model_path=model_path,
             image_path=filepath,
             model_type=model_type,
-            conf=confidence
+            conf=confidence,
+            use_polygon=use_polygon
         )
+
     else:
         results = model.predict(filepath, imgsz=1024, conf=confidence)
+        r = results[0]
 
-        for box in results[0].boxes:
-            detections.append({
-                "class": str(results[0].names[int(box.cls.item())]),
+        for i, box in enumerate(r.boxes):
+            det = {
+                "class": str(r.names[int(box.cls.item())]),
                 "confidence": float(box.conf.item()),
                 "bbox": [
                     float(box.xyxy[0][0].item()),
@@ -385,11 +424,18 @@ def detect_handler():
                     float(box.xyxy[0][2].item()),
                     float(box.xyxy[0][3].item())
                 ]
-            })
+            }
+
+            if use_polygon and getattr(r, "masks", None) is not None and r.masks is not None:
+                if i < len(r.masks.xy) and r.masks.xy[i] is not None:
+                    det["polygon"] = r.masks.xy[i].tolist()
+
+            detections.append(det)
 
     return jsonify({
         "mode": mode,
         "useSAHI": use_sahi,
+        "usePolygon": use_polygon,
         "detections": detections
     })
 

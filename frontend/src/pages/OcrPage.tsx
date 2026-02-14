@@ -6,6 +6,7 @@ const OcrPage = () => (
     modes={["pytesseract", "easyocr"]}
     title="OCR Text Recognition"
     gradient="linear-gradient(135deg, #43cea2, #185a9d)"
+    polygon={false}
   />
 );
 

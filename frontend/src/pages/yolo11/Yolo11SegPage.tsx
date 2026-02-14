@@ -13,6 +13,7 @@ const Yolo11SegPage: React.FC = () => {
       ]}
       title="YOLOv11 Object Segmentation"
       gradient="linear-gradient(135deg, #43cea2, #185a9d)"
+      polygon={true}
     />
   );
 };

@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface UIState {
   sidebarOpen: boolean;
   useSahi: boolean;
+  usePolygon: boolean;
   confidence: number;
   detectionMode: string | null;
 }
@@ -10,6 +11,7 @@ interface UIState {
 const initialState: UIState = {
   sidebarOpen: false,
   useSahi: false,
+  usePolygon: false,
   confidence: 50,
   detectionMode: null,
 };
@@ -33,6 +35,12 @@ const uiSlice = createSlice({
     setUseSahi(state, action: PayloadAction<boolean>) {
       state.useSahi = action.payload;
     },
+    togglePolygon(state) {
+      state.usePolygon = !state.usePolygon;
+    },
+    setUsePolygon(state, action: PayloadAction<boolean>) {
+      state.usePolygon = action.payload;
+    },
     setDetectionMode(state, action: PayloadAction<string>) {
       state.detectionMode = action.payload;
     },
@@ -48,6 +56,8 @@ export const {
   closeSidebar,
   toggleSahi,
   setUseSahi,
+  togglePolygon,
+  setUsePolygon,
   setDetectionMode,
   setConfidence,
 } = uiSlice.actions;

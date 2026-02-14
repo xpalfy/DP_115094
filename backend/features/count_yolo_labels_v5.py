@@ -62,19 +62,40 @@ for cls_id in sorted(class_counts.keys(), key=lambda x: int(x)):
 
 print("\nTotal objects:", sum(class_counts.values()))
 
-# --- Plot ---
+# --- Prepare plot data ---
 labels = [
     f"{cid} - {CLASS_MAP.get(cid, 'UNKNOWN')}"
     for cid in sorted(class_counts.keys(), key=lambda x: int(x))
 ]
-counts = [class_counts[cid] for cid in sorted(class_counts.keys(), key=lambda x: int(x))]
 
+counts = [
+    class_counts[cid]
+    for cid in sorted(class_counts.keys(), key=lambda x: int(x))
+]
+
+# --- Plot ---
 plt.figure(figsize=(14, 7))
+
 plt.bar(labels, counts)
-plt.xlabel("Class")
-plt.ylabel("Count")
-plt.title("Object Count per Class")
-plt.xticks(rotation=45, ha="right")
+
+# Axis labels (bigger + bold)
+plt.xlabel("Class", fontsize=14, fontweight="bold")
+plt.ylabel("Count", fontsize=14, fontweight="bold")
+
+# Title (bigger + bold + margin)
+plt.title(
+    "Object Count per Class — French Dataset (v5)",
+    fontsize=18,
+    fontweight="bold",
+    pad=20
+)
+
+# Tick labels
+plt.xticks(rotation=45, ha="right", fontsize=12)
+plt.yticks(fontsize=12)
+
+# Grid styling
 plt.grid(axis="y", linestyle="--", alpha=0.5)
+
 plt.tight_layout()
 plt.show()

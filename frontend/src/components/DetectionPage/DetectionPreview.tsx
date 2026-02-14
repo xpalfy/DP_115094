@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -27,10 +27,10 @@ const DetectionPreview: React.FC<DetectionPreviewProps> = ({
   loading,
 }) => {
   const [imageDims, setImageDims] = useState({ w: 1, h: 1 });
-  const [renderDims, setRenderDims] = useState({ w: 1, h: 1 });
 
   const cropFromOriginal = (det: any) => {
     if (!imgRef.current) return;
+
     const [x1, y1, x2, y2] = det.bbox;
     const img = imgRef.current;
 
@@ -40,6 +40,7 @@ const DetectionPreview: React.FC<DetectionPreviewProps> = ({
 
     const cropWidth = x2 - x1;
     const cropHeight = y2 - y1;
+
     canvas.width = cropWidth;
     canvas.height = cropHeight;
 
@@ -52,8 +53,9 @@ const DetectionPreview: React.FC<DetectionPreviewProps> = ({
       0,
       0,
       cropWidth,
-      cropHeight
+      cropHeight,
     );
+
     const dataUrl = canvas.toDataURL("image/png");
     onCrop(det, dataUrl);
   };
@@ -86,45 +88,101 @@ const DetectionPreview: React.FC<DetectionPreviewProps> = ({
           }}
           onLoad={(e) => {
             const img = e.currentTarget;
-            setImageDims({ w: img.naturalWidth, h: img.naturalHeight });
-            setRenderDims({ w: img.width, h: img.height });
+            setImageDims({
+              w: img.naturalWidth,
+              h: img.naturalHeight,
+            });
           }}
         />
 
-        {detections.map((det: any, i: number) => {
-          const [x1, y1, x2, y2] = det.bbox;
-          const scaleX = renderDims.w / imageDims.w;
-          const scaleY = renderDims.h / imageDims.h;
-
-          return (
-            <Box
-              key={i}
-              onClick={() => cropFromOriginal(det)}
-              sx={{
+        {detections.length > 0 && (
+          <>
+            <svg
+              style={{
                 position: "absolute",
-                left: `${x1 * scaleX}px`,
-                top: `${y1 * scaleY}px`,
-                width: `${(x2 - x1) * scaleX}px`,
-                height: `${(y2 - y1) * scaleY}px`,
-                border: "2px solid #ff3b3b",
-                borderRadius: "3px",
-                backgroundColor: "rgba(255,0,0,0.25)",
-                cursor: "pointer",
-                transition: "all 0.2s ease-in-out",
-                "&:hover": {
-                  backgroundColor: "rgba(255,0,0,0.45)",
-                  borderColor: "#ff5555",
-                },
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                pointerEvents: "none",
               }}
-            />
-          );
-        })}
+              viewBox={`0 0 ${imageDims.w} ${imageDims.h}`}
+              preserveAspectRatio="none"
+            >
+              {detections.map((det: any, i: number) => {
+                const hasPoly =
+                  Array.isArray(det.polygon) && det.polygon.length > 2;
+
+                if (hasPoly) {
+                  const points = det.polygon
+                    .map(([x, y]: [number, number]) => `${x},${y}`)
+                    .join(" ");
+
+                  return (
+                    <polygon
+                      key={i}
+                      points={points}
+                      fill="rgba(0,255,0,0.40)"
+                      stroke="#00ff66"
+                      strokeWidth={3}
+                    />
+                  );
+                }
+
+                const [x1, y1, x2, y2] = det.bbox;
+
+                return (
+                  <rect
+                    key={i}
+                    x={x1}
+                    y={y1}
+                    width={x2 - x1}
+                    height={y2 - y1}
+                    fill="rgba(255,0,0,0.40)"
+                    stroke="#ff0000"
+                    strokeWidth={3}
+                    rx={3}
+                    ry={3}
+                  />
+                );
+              })}
+            </svg>
+
+            <svg
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+              }}
+              viewBox={`0 0 ${imageDims.w} ${imageDims.h}`}
+              preserveAspectRatio="none"
+            >
+              {detections.map((det: any, i: number) => {
+                const [x1, y1, x2, y2] = det.bbox;
+
+                return (
+                  <rect
+                    key={i}
+                    x={x1}
+                    y={y1}
+                    width={x2 - x1}
+                    height={y2 - y1}
+                    fill="transparent"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => cropFromOriginal(det)}
+                  />
+                );
+              })}
+            </svg>
+          </>
+        )}
       </Box>
 
       <Stack direction="row" spacing={2} justifyContent="center" mt={3}>
         <Button variant="outlined" color="error" onClick={onRemove}>
           Remove
         </Button>
+
         <Button
           variant="contained"
           color="primary"

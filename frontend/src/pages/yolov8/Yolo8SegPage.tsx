@@ -7,6 +7,7 @@ const Yolo8SegPage: React.FC = () => {
       modes={["yolov8n-seg", "yolov8s-seg", "yolov8m-seg", "yolov8l-seg"]}
       title="YOLOv8 Object Segmentation"
       gradient="linear-gradient(135deg, #43cea2, #185a9d)"
+      polygon={true}
     />
   );
 };

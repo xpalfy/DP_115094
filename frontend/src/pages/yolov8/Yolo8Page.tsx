@@ -7,6 +7,7 @@ const Yolo8Page: React.FC = () => {
       modes={["yolov8n", "yolov8s", "yolov8m", "yolov8l"]}
       title="YOLOv8 Object Detection"
       gradient="linear-gradient(135deg, #43cea2, #185a9d)"
+      polygon={false}
     />
   );
 };

@@ -20,21 +20,28 @@ import ImageUploader from "../components/DetectionPage/ImageUploader";
 import DetectionPreview from "../components/DetectionPage/DetectionPreview";
 import CroppedModal from "../components/DetectionPage/CroppedModal";
 import SahiToggle from "../components/DetectionPage/SahiToggle";
+import PolygonToggle from "../components/DetectionPage/PolygonToggle";
 
 interface Props {
   modes: string[];
   title: string;
   gradient: string;
+  polygon: boolean;
 }
 
-const DetectionPage: React.FC<Props> = ({ modes, title, gradient }) => {
+const DetectionPage: React.FC<Props> = ({
+  modes,
+  title,
+  gradient,
+  polygon,
+}) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const { preview, detections } = useSelector(
-    (state: RootState) => state.image
+    (state: RootState) => state.image,
   );
-  const { useSahi, detectionMode, confidence } = useSelector(
-    (state: RootState) => state.ui
+  const { useSahi, usePolygon, detectionMode, confidence } = useSelector(
+    (state: RootState) => state.ui,
   );
 
   const [file, setFile] = useState<File | null>(null);
@@ -60,6 +67,7 @@ const DetectionPage: React.FC<Props> = ({ modes, title, gradient }) => {
     formData.append("file", file);
     formData.append("mode", detectionMode || modes[0]);
     formData.append("useSAHI", String(useSahi));
+    formData.append("usePolygon", String(polygon && usePolygon));
     formData.append("confidence", String(confidence));
 
     try {
@@ -82,7 +90,7 @@ const DetectionPage: React.FC<Props> = ({ modes, title, gradient }) => {
         toast.success(
           `Found ${data.detections.length} detections ${
             useSahi ? "(SAHI enabled)" : ""
-          }`
+          }`,
         );
       } else {
         toast.warn("No detections found.");
@@ -146,13 +154,31 @@ const DetectionPage: React.FC<Props> = ({ modes, title, gradient }) => {
             </Select>
           </FormControl>
 
-          {/* SAHI + CONFIDENCE */}
-          <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
-            <Box sx={{ flex: 2 }}>
+          {/* SAHI + POLYGON + CONFIDENCE */}
+          <Box
+            sx={{
+              display: "flex",
+              gap: 5,
+              mt: 3,
+              alignItems: "center",
+              justifyContent: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                justifyContent: "center",
+              }}
+            >
               <SahiToggle visible />
+              {polygon && <PolygonToggle visible />}
             </Box>
 
-            <FormControl fullWidth sx={{ flex: 1 }}>
+            {/* Confidence */}
+            <FormControl sx={{ minWidth: 180 }}>
               <InputLabel>Confidence</InputLabel>
               <Select
                 value={confidence}
