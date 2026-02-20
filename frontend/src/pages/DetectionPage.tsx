@@ -23,6 +23,7 @@ import SahiToggle from "../components/DetectionPage/SahiToggle";
 import PolygonToggle from "../components/DetectionPage/PolygonToggle";
 
 interface Props {
+  type: string;
   modes: string[];
   title: string;
   gradient: string;
@@ -30,6 +31,7 @@ interface Props {
 }
 
 const DetectionPage: React.FC<Props> = ({
+  type,
   modes,
   title,
   gradient,
@@ -155,46 +157,48 @@ const DetectionPage: React.FC<Props> = ({
           </FormControl>
 
           {/* SAHI + POLYGON + CONFIDENCE */}
-          <Box
-            sx={{
-              display: "flex",
-              gap: 5,
-              mt: 3,
-              alignItems: "center",
-              justifyContent: "center",
-              flexWrap: "wrap",
-            }}
-          >
+          {type !== "ocr" && (
             <Box
               sx={{
                 display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
+                gap: 5,
+                mt: 3,
+                alignItems: "center",
                 justifyContent: "center",
+                flexWrap: "wrap",
               }}
             >
-              <SahiToggle visible />
-              {polygon && <PolygonToggle visible />}
-            </Box>
-
-            {/* Confidence */}
-            <FormControl sx={{ minWidth: 180 }}>
-              <InputLabel>Confidence</InputLabel>
-              <Select
-                value={confidence}
-                label="Confidence"
-                onChange={(e) =>
-                  dispatch(setConfidence(Number(e.target.value)))
-                }
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  justifyContent: "center",
+                }}
               >
-                {[25, 50, 75, 90].map((v) => (
-                  <MenuItem key={v} value={v}>
-                    {v}%
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
+                <SahiToggle visible />
+                {polygon && <PolygonToggle visible />}
+              </Box>
+
+              {/* Confidence */}
+              <FormControl sx={{ minWidth: 180 }}>
+                <InputLabel>Confidence</InputLabel>
+                <Select
+                  value={confidence}
+                  label="Confidence"
+                  onChange={(e) =>
+                    dispatch(setConfidence(Number(e.target.value)))
+                  }
+                >
+                  {[25, 50, 75, 90].map((v) => (
+                    <MenuItem key={v} value={v}>
+                      {v}%
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+          )}
 
           {/* IMAGE */}
           {!preview ? (

@@ -59,13 +59,11 @@ yolo12s_model = YOLO("runs/runs_linux/yolo12/detect/train_yolo12s/v1_yolo12s/wei
 yolo12m_model = YOLO("runs/runs_linux/yolo12/detect/train_yolo12m/v1_yolo12m/weights/best.pt")
 yolo12l_model = YOLO("runs/runs_linux/yolo12/detect/train_yolo12l/v1_yolo12l/weights/best.pt")
 
-best_model = YOLO("runs/yolo11/segment/train_yolo11l_seg/v5_yolo11l_seg/weights/best.pt")
-
 # ===================================================
 # VERSION HANDLING
 # ===================================================
 
-ALLOWED_VERSIONS = {"v4.1","v4", "v5"}
+ALLOWED_VERSIONS = {"v4", "v5"}
 
 def get_dataset_dir(version: str) -> str:
     if version not in ALLOWED_VERSIONS:
@@ -141,14 +139,10 @@ def get_average_images():
 
 @app.route("/dataset/images/<path:filename>")
 def serve_dataset_image(filename):
-    split = request.args.get("split", "train")
     version = request.args.get("v", "v4")
 
     dataset_dir = get_dataset_dir(version)
-
-    img_dir = os.path.join(dataset_dir, split, "images")
-    if not os.path.exists(img_dir):
-        img_dir = os.path.join(dataset_dir, "images")
+    img_dir = os.path.join(dataset_dir, "images")
 
     if not os.path.exists(img_dir):
         return jsonify({"error": f"Image dir not found: {img_dir}"}), 404
@@ -163,19 +157,11 @@ def serve_dataset_image(filename):
 @app.route("/sample_images", methods=["GET"])
 def get_sample_images():
     num = int(request.args.get("num", 6))
-    split = request.args.get("split", "train")
     version = request.args.get("v", "v4")
 
     dataset_dir = get_dataset_dir(version)
-
-    img_dir = os.path.join(dataset_dir, split, "images")
-    label_dir = os.path.join(dataset_dir, split, "labels")
-
-    if not os.path.exists(img_dir):
-        img_dir = os.path.join(dataset_dir, "images")
-
-    if not os.path.exists(label_dir):
-        label_dir = os.path.join(dataset_dir, "labels")
+    img_dir = os.path.join(dataset_dir, "images")
+    label_dir = os.path.join(dataset_dir, "labels")
 
     if not os.path.exists(img_dir) or not os.path.exists(label_dir):
         return jsonify({
@@ -230,13 +216,12 @@ def get_sample_images():
             "filename": file,
             "width": w,
             "height": h,
-            "image_url": f"http://localhost:5000/dataset/images/{file}?v={version}&split={split}",
+            "image_url": f"http://localhost:5000/dataset/images/{file}?v={version}",
             "annotations": annotations
         })
 
     return jsonify({
         "version": version,
-        "split": split,
         "count": len(results),
         "images": results
     })
@@ -392,8 +377,6 @@ def detect_handler():
         "yolo12s": (yolo12s_model, "runs/runs_linux/yolo12/detect/train_yolo12s/v1_yolo12s/weights/best.pt", "yolov8"),
         "yolo12m": (yolo12m_model, "runs/runs_linux/yolo12/detect/train_yolo12m/v1_yolo12m/weights/best.pt", "yolov8"),
         "yolo12l": (yolo12l_model, "runs/runs_linux/yolo12/detect/train_yolo12l/v1_yolo12l/weights/best.pt", "yolov8"),
-
-        "best": (best_model, "runs/yolo11/segment/train_yolo11l_seg/v5_yolo11l_seg/weights/best.pt", "yolov8"),
     }
 
     if mode not in model_map:

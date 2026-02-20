@@ -9,7 +9,6 @@ import {
   setDetectionMode,
   setUseSahi,
   setConfidence,
-  toggleSahi,
   setUsePolygon,
 } from "../features/ui/uiSlice";
 import Header from "./Header";

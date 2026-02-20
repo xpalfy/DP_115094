@@ -7,7 +7,7 @@ from collections import defaultdict
 from tqdm import tqdm
 
 # ===== Load data.yaml =====
-DATA_YAML_PATH = "../../dataset/v5/data.yaml"
+DATA_YAML_PATH = "../../../dataset/v5/data.yaml"
 
 if not os.path.exists(DATA_YAML_PATH):
     raise FileNotFoundError(f"data.yaml not found at: {DATA_YAML_PATH}")
@@ -103,7 +103,7 @@ for img_file in tqdm(image_files, desc="Processing images"):
             class_counts[cls] += 1
 
 # ===== Save average images =====
-OUTPUT_DIR = "../average_images_v5"
+OUTPUT_DIR = "../../average_images_v5"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 average_images = {}

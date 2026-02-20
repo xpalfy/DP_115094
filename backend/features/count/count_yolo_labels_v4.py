@@ -5,7 +5,7 @@ from collections import Counter
 import matplotlib.pyplot as plt
 
 # --- Load data.yaml ---
-DATA_YAML_PATH = "../../dataset/v4/data.yaml"
+DATA_YAML_PATH = "../../../dataset/v4/data.yaml"
 
 if not os.path.exists(DATA_YAML_PATH):
     raise FileNotFoundError(f"data.yaml not found at: {DATA_YAML_PATH}")

@@ -91,7 +91,7 @@ for name, weight_path in MODELS.items():
     print(f"\n=== Evaluating {name} ===")
 
     if not os.path.exists(weight_path):
-        print(f"⚠️ Weights not found: {weight_path}")
+        print(f"Weights not found: {weight_path}")
         continue
 
     model = YOLO(weight_path)
@@ -135,5 +135,5 @@ with open(OUTPUT_CSV, "w", newline="", encoding="utf-8") as f:
     writer.writeheader()
     writer.writerows(results)
 
-print("\n✅ Test evaluation finished")
-print(f"📄 Results saved to: {OUTPUT_CSV}")
+print("\nTest evaluation finished")
+print(f"Results saved to: {OUTPUT_CSV}")

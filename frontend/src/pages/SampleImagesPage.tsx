@@ -34,15 +34,14 @@ const SampleImagesPage: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
-  const [version, setVersion] = useState<"v4.1" | "v4" | "v5">("v4.1");
-  const [split, setSplit] = useState<"train" | "val" | "test">("train");
+  const [version, setVersion] = useState<"v4" | "v5">("v4");
   const [numImages, setNumImages] = useState<number>(10);
 
   const fetchImages = async () => {
     try {
       setLoading(true);
       const res = await fetch(
-        `http://localhost:5000/sample_images?v=${version}&num=${numImages}&split=${split}`
+        `http://localhost:5000/sample_images?v=${version}&num=${numImages}`,
       );
       const data = await res.json();
 
@@ -59,13 +58,7 @@ const SampleImagesPage: React.FC = () => {
 
   useEffect(() => {
     fetchImages();
-  }, [version, split, numImages]);
-
-  useEffect(() => {
-    if (version !== "v4.1") {
-      setSplit("train");
-    }
-  }, [version]);
+  }, [version, numImages]);
 
   return (
     <>
@@ -118,34 +111,13 @@ const SampleImagesPage: React.FC = () => {
                 labelId="version-select-label"
                 value={version}
                 label="Dataset version"
-                onChange={(e) =>
-                  setVersion(e.target.value as "v4.1" | "v4" | "v5")
-                }
+                onChange={(e) => setVersion(e.target.value as "v4" | "v5")}
                 sx={{ minWidth: 160 }}
               >
-                <MenuItem value="v4.1">v4.1</MenuItem>
                 <MenuItem value="v4">v4</MenuItem>
                 <MenuItem value="v5">v5</MenuItem>
               </Select>
             </FormControl>
-            {/* Split selector */}
-            {version === "v4.1" && (
-              <FormControl sx={{ minWidth: 160 }}>
-                <InputLabel>Dataset Split</InputLabel>
-                <Select
-                  value={split}
-                  label="Dataset Split"
-                  onChange={(e) =>
-                    setSplit(e.target.value as "train" | "val" | "test")
-                  }
-                >
-                  <MenuItem value="train">Train</MenuItem>
-                  <MenuItem value="val">Val</MenuItem>
-                  <MenuItem value="test">Test</MenuItem>
-                </Select>
-              </FormControl>
-            )}
-
             {/* Number selector */}
             <FormControl sx={{ minWidth: 140 }}>
               <InputLabel>Samples</InputLabel>
@@ -191,8 +163,8 @@ const SampleImagesPage: React.FC = () => {
               prev === null
                 ? null
                 : d === "next"
-                ? (prev + 1) % images.length
-                : (prev - 1 + images.length) % images.length
+                  ? (prev + 1) % images.length
+                  : (prev - 1 + images.length) % images.length,
             )
           }
         />

@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 # ================= CONFIG =================
 
 # Average image folders
-DIR_V4 = "../average_images_v4"
-DIR_V5 = "../average_images_v5"
+DIR_V4 = "../../average_images_v4"
+DIR_V5 = "../../average_images_v5"
 
 # Temporary collages
 TEMP_V4 = "collage_v4_tmp.png"
