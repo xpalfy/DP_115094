@@ -4,8 +4,8 @@ import cv2
 import matplotlib.pyplot as plt
 
 NUM_IMAGES = 5
-IMAGE_DIR = "../dataset/v4.4_box/train/images"
-LABEL_DIR = "../dataset/v4.4_box/train/labels"
+IMAGE_DIR = "../../../dataset/v5.5/train/images"
+LABEL_DIR = "../../../dataset/v5.5/train/labels"
 
 image_files = [
     f for f in os.listdir(IMAGE_DIR)
