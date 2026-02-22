@@ -13,5 +13,5 @@ register_average_images_routes(app)
 register_dataset_images_routes(app)
 
 if __name__ == "__main__":
-    print("Flask API ready (split into detect / average / dataset images)")
+    print("Flask API ready")
     app.run(host="0.0.0.0", port=5000, debug=True)

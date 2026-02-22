@@ -7,6 +7,7 @@ from flask import request, jsonify
 from ultralytics import YOLO
 from sahi import AutoDetectionModel
 from sahi.predict import get_sliced_prediction
+from functools import lru_cache
 
 # ===================================================
 # OCR
@@ -16,69 +17,79 @@ pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tessera
 easyocr_reader = easyocr.Reader(["en"])
 
 # ===================================================
-# YOLO MODELS
+# MODEL MAP
 # ===================================================
 
-# YOLOv8 detection
-yolov8n_model = YOLO("runs/runs_linux/yolov8/detect/train_yolov8n/v1_yolov8n/weights/best.pt")
-yolov8s_model = YOLO("runs/runs_linux/yolov8/detect/train_yolov8s/v1_yolov8s/weights/best.pt")
-yolov8m_model = YOLO("runs/runs_linux/yolov8/detect/train_yolov8m/v1_yolov8m/weights/best.pt")
-yolov8l_model = YOLO("runs/runs_linux/yolov8/detect/train_yolov8l/v1_yolov8l/weights/best.pt")
-
-# YOLOv8 segmentation
-yolov8n_seg_model = YOLO("runs/runs_linux/yolov8/segment/train_yolov8n-seg/v1_yolov8n-seg/weights/best.pt")
-yolov8s_seg_model = YOLO("runs/runs_linux/yolov8/segment/train_yolov8s-seg/v1_yolov8s-seg/weights/best.pt")
-yolov8m_seg_model = YOLO("runs/runs_linux/yolov8/segment/train_yolov8m-seg/v1_yolov8m-seg/weights/best.pt")
-yolov8l_seg_model = YOLO("runs/runs_linux/yolov8/segment/train_yolov8l-seg/v1_yolov8l-seg/weights/best.pt")
-
-# YOLO11 detection
-yolo11n_model = YOLO("runs/runs_linux/yolo11/detect/train_yolo11n/v1_yolo11n/weights/best.pt")
-yolo11s_model = YOLO("runs/runs_linux/yolo11/detect/train_yolo11s/v1_yolo11s/weights/best.pt")
-yolo11m_model = YOLO("runs/runs_linux/yolo11/detect/train_yolo11m/v1_yolo11m/weights/best.pt")
-yolo11l_model = YOLO("runs/runs_linux/yolo11/detect/train_yolo11l/v1_yolo11l/weights/best.pt")
-
-# YOLO11 segmentation
-yolo11n_seg_model = YOLO("runs/runs_linux/yolo11/segment/train_yolo11n-seg/v1_yolo11n-seg/weights/best.pt")
-yolo11s_seg_model = YOLO("runs/runs_linux/yolo11/segment/train_yolo11s-seg/v1_yolo11s-seg/weights/best.pt")
-yolo11m_seg_model = YOLO("runs/runs_linux/yolo11/segment/train_yolo11m-seg/v1_yolo11m-seg/weights/best.pt")
-yolo11l_seg_model = YOLO("runs/runs_linux/yolo11/segment/train_yolo11l-seg/v1_yolo11l-seg/weights/best.pt")
-
-# YOLO12 detection
-yolo12n_model = YOLO("runs/runs_linux/yolo12/detect/train_yolo12n/v1_yolo12n/weights/best.pt")
-yolo12s_model = YOLO("runs/runs_linux/yolo12/detect/train_yolo12s/v1_yolo12s/weights/best.pt")
-yolo12m_model = YOLO("runs/runs_linux/yolo12/detect/train_yolo12m/v1_yolo12m/weights/best.pt")
-yolo12l_model = YOLO("runs/runs_linux/yolo12/detect/train_yolo12l/v1_yolo12l/weights/best.pt")
-
-best_model = YOLO("runs/yolo11/segment/train_yolo11l_seg/v5_yolo11l_seg/weights/best.pt")
-
 MODEL_MAP = {
-    "yolov8n": (yolov8n_model, "runs/runs_linux/yolov8/detect/train_yolov8n/v1_yolov8n/weights/best.pt", "yolov8"),
-    "yolov8s": (yolov8s_model, "runs/runs_linux/yolov8/detect/train_yolov8s/v1_yolov8s/weights/best.pt", "yolov8"),
-    "yolov8m": (yolov8m_model, "runs/runs_linux/yolov8/detect/train_yolov8m/v1_yolov8m/weights/best.pt", "yolov8"),
-    "yolov8l": (yolov8l_model, "runs/runs_linux/yolov8/detect/train_yolov8l/v1_yolov8l/weights/best.pt", "yolov8"),
+    # ---------------- GERMAN ----------------
+    "yolov8n_german": ("runs/german/yolov8/detect/train_yolov8n/v1_yolov8n/weights/best.pt", "yolov8"),
+    "yolov8s_german": ("runs/german/yolov8/detect/train_yolov8s/v1_yolov8s/weights/best.pt", "yolov8"),
+    "yolov8m_german": ("runs/german/yolov8/detect/train_yolov8m/v1_yolov8m/weights/best.pt", "yolov8"),
+    "yolov8l_german": ("runs/german/yolov8/detect/train_yolov8l/v1_yolov8l/weights/best.pt", "yolov8"),
 
-    "yolov8n-seg": (yolov8n_seg_model, "runs/runs_linux/yolov8/segment/train_yolov8n-seg/v1_yolov8n-seg/weights/best.pt", "yolov8"),
-    "yolov8s-seg": (yolov8s_seg_model, "runs/runs_linux/yolov8/segment/train_yolov8s-seg/v1_yolov8s-seg/weights/best.pt", "yolov8"),
-    "yolov8m-seg": (yolov8m_seg_model, "runs/runs_linux/yolov8/segment/train_yolov8m-seg/v1_yolov8m-seg/weights/best.pt", "yolov8"),
-    "yolov8l-seg": (yolov8l_seg_model, "runs/runs_linux/yolov8/segment/train_yolov8l-seg/v1_yolov8l-seg/weights/best.pt", "yolov8"),
+    "yolov8n-seg_german": ("runs/german/yolov8/segment/train_yolov8n-seg/v1_yolov8n-seg/weights/best.pt", "yolov8"),
+    "yolov8s-seg_german": ("runs/german/yolov8/segment/train_yolov8s-seg/v1_yolov8s-seg/weights/best.pt", "yolov8"),
+    "yolov8m-seg_german": ("runs/german/yolov8/segment/train_yolov8m-seg/v1_yolov8m-seg/weights/best.pt", "yolov8"),
+    "yolov8l-seg_german": ("runs/german/yolov8/segment/train_yolov8l-seg/v1_yolov8l-seg/weights/best.pt", "yolov8"),
 
-    "yolo11n": (yolo11n_model, "runs/runs_linux/yolo11/detect/train_yolo11n/v1_yolo11n/weights/best.pt", "yolov8"),
-    "yolo11s": (yolo11s_model, "runs/runs_linux/yolo11/detect/train_yolo11s/v1_yolo11s/weights/best.pt", "yolov8"),
-    "yolo11m": (yolo11m_model, "runs/runs_linux/yolo11/detect/train_yolo11m/v1_yolo11m/weights/best.pt", "yolov8"),
-    "yolo11l": (yolo11l_model, "runs/runs_linux/yolo11/detect/train_yolo11l/v1_yolo11l/weights/best.pt", "yolov8"),
+    "yolo11n_german": ("runs/german/yolo11/detect/train_yolo11n/v1_yolo11n/weights/best.pt", "yolov8"),
+    "yolo11s_german": ("runs/german/yolo11/detect/train_yolo11s/v1_yolo11s/weights/best.pt", "yolov8"),
+    "yolo11m_german": ("runs/german/yolo11/detect/train_yolo11m/v1_yolo11m/weights/best.pt", "yolov8"),
+    "yolo11l_german": ("runs/german/yolo11/detect/train_yolo11l/v1_yolo11l/weights/best.pt", "yolov8"),
 
-    "yolo11n-seg": (yolo11n_seg_model, "runs/runs_linux/yolo11/segment/train_yolo11n-seg/v1_yolo11n-seg/weights/best.pt", "yolov8"),
-    "yolo11s-seg": (yolo11s_seg_model, "runs/runs_linux/yolo11/segment/train_yolo11s-seg/v1_yolo11s-seg/weights/best.pt", "yolov8"),
-    "yolo11m-seg": (yolo11m_seg_model, "runs/runs_linux/yolo11/segment/train_yolo11m-seg/v1_yolo11m-seg/weights/best.pt", "yolov8"),
-    "yolo11l-seg": (yolo11l_seg_model, "runs/runs_linux/yolo11/segment/train_yolo11l-seg/v1_yolo11l-seg/weights/best.pt", "yolov8"),
+    "yolo11n-seg_german": ("runs/german/yolo11/segment/train_yolo11n-seg/v1_yolo11n-seg/weights/best.pt", "yolov8"),
+    "yolo11s-seg_german": ("runs/german/yolo11/segment/train_yolo11s-seg/v1_yolo11s-seg/weights/best.pt", "yolov8"),
+    "yolo11m-seg_german": ("runs/german/yolo11/segment/train_yolo11m-seg/v1_yolo11m-seg/weights/best.pt", "yolov8"),
+    "yolo11l-seg_german": ("runs/german/yolo11/segment/train_yolo11l-seg/v1_yolo11l-seg/weights/best.pt", "yolov8"),
 
-    "yolo12n": (yolo12n_model, "runs/runs_linux/yolo12/detect/train_yolo12n/v1_yolo12n/weights/best.pt", "yolov8"),
-    "yolo12s": (yolo12s_model, "runs/runs_linux/yolo12/detect/train_yolo12s/v1_yolo12s/weights/best.pt", "yolov8"),
-    "yolo12m": (yolo12m_model, "runs/runs_linux/yolo12/detect/train_yolo12m/v1_yolo12m/weights/best.pt", "yolov8"),
-    "yolo12l": (yolo12l_model, "runs/runs_linux/yolo12/detect/train_yolo12l/v1_yolo12l/weights/best.pt", "yolov8"),
+    "yolo12n_german": ("runs/german/yolo12/detect/train_yolo12n/v1_yolo12n/weights/best.pt", "yolov8"),
+    "yolo12s_german": ("runs/german/yolo12/detect/train_yolo12s/v1_yolo12s/weights/best.pt", "yolov8"),
+    "yolo12m_german": ("runs/german/yolo12/detect/train_yolo12m/v1_yolo12m/weights/best.pt", "yolov8"),
+    "yolo12l_german": ("runs/german/yolo12/detect/train_yolo12l/v1_yolo12l/weights/best.pt", "yolov8"),
 
-    "best": (best_model, "runs/yolo11/segment/train_yolo11l_seg/v5_yolo11l_seg/weights/best.pt", "yolov8"),
+    # ---------------- FRENCH ----------------
+    "yolov8n_french": ("runs/french/yolov8/detect/train_yolov8n/v1_yolov8n/weights/best.pt", "yolov8"),
+    "yolov8s_french": ("runs/french/yolov8/detect/train_yolov8s/v1_yolov8s/weights/best.pt", "yolov8"),
+    "yolov8m_french": ("runs/french/yolov8/detect/train_yolov8m/v1_yolov8m/weights/best.pt", "yolov8"),
+    "yolov8l_french": ("runs/french/yolov8/detect/train_yolov8l/v1_yolov8l/weights/best.pt", "yolov8"),
+
+    "yolov8n-seg_french": ("runs/french/yolov8/segment/train_yolov8n-seg/v1_yolov8n-seg/weights/best.pt", "yolov8"),
+    "yolov8s-seg_french": ("runs/french/yolov8/segment/train_yolov8s-seg/v1_yolov8s-seg/weights/best.pt", "yolov8"),
+    "yolov8m-seg_french": ("runs/french/yolov8/segment/train_yolov8m-seg/v1_yolov8m-seg/weights/best.pt", "yolov8"),
+    "yolov8l-seg_french": ("runs/french/yolov8/segment/train_yolov8l-seg/v1_yolov8l-seg/weights/best.pt", "yolov8"),
+
+    "yolo11n_french": ("runs/french/yolo11/detect/train_yolo11n/v1_yolo11n/weights/best.pt", "yolov8"),
+    "yolo11s_french": ("runs/french/yolo11/detect/train_yolo11s/v1_yolo11s/weights/best.pt", "yolov8"),
+    "yolo11m_french": ("runs/french/yolo11/detect/train_yolo11m/v1_yolo11m/weights/best.pt", "yolov8"),
+    "yolo11l_french": ("runs/french/yolo11/detect/train_yolo11l/v1_yolo11l/weights/best.pt", "yolov8"),
+
+    "yolo11n-seg_french": ("runs/french/yolo11/segment/train_yolo11n-seg/v1_yolo11n-seg/weights/best.pt", "yolov8"),
+    "yolo11s-seg_french": ("runs/french/yolo11/segment/train_yolo11s-seg/v1_yolo11s-seg/weights/best.pt", "yolov8"),
+    "yolo11m-seg_french": ("runs/french/yolo11/segment/train_yolo11m-seg/v1_yolo11m-seg/weights/best.pt", "yolov8"),
+    "yolo11l-seg_french": ("runs/french/yolo11/segment/train_yolo11l-seg/v1_yolo11l-seg/weights/best.pt", "yolov8"),
+
+    "yolo12n_french": ("runs/french/yolo12/detect/train_yolo12n/v1_yolo12n/weights/best.pt", "yolov8"),
+    "yolo12s_french": ("runs/french/yolo12/detect/train_yolo12s/v1_yolo12s/weights/best.pt", "yolov8"),
+    "yolo12m_french": ("runs/french/yolo12/detect/train_yolo12m/v1_yolo12m/weights/best.pt", "yolov8"),
+    "yolo12l_french": ("runs/french/yolo12/detect/train_yolo12l/v1_yolo12l/weights/best.pt", "yolov8"),
 }
+
+# ===================================================
+# LAZY LOAD + CACHE
+# ===================================================
+
+@lru_cache(maxsize=4)
+def get_yolo_model(model_path: str) -> YOLO:
+    return YOLO(model_path)
+
+@lru_cache(maxsize=32)
+def get_sahi_model(model_type: str, model_path: str, conf: float):
+    return AutoDetectionModel.from_pretrained(
+        model_type=model_type,
+        model_path=model_path,
+        confidence_threshold=conf,
+        device="cuda"
+    )
 
 # ===================================================
 # SAHI
@@ -111,12 +122,7 @@ def sahi_mask_to_polygon(det, min_area=20):
 
 
 def run_sahi_inference(model_path, image_path, model_type="yolov8", conf=0.5, use_polygon=False):
-    detection_model = AutoDetectionModel.from_pretrained(
-        model_type=model_type,
-        model_path=model_path,
-        confidence_threshold=conf,
-        device="cuda"
-    )
+    detection_model = get_sahi_model(model_type, model_path, conf)
 
     result = get_sliced_prediction(image_path, detection_model)
     detections = []
@@ -152,7 +158,7 @@ def register_detect_routes(app):
             return jsonify({"error": "No file uploaded"}), 400
 
         file = request.files["file"]
-        mode = request.form.get("mode", "yolo11n")
+        mode = request.form.get("mode", "yolov8n_german")
         use_sahi = request.form.get("useSAHI", "false").lower() == "true"
         use_polygon = request.form.get("usePolygon", "false").lower() == "true"
         confidence = float(request.form.get("confidence", 50)) / 100.0
@@ -191,11 +197,11 @@ def register_detect_routes(app):
                 })
             return jsonify({"mode": mode, "detections": detections})
 
-        # YOLO
+        # YOLO / SAHI
         if mode not in MODEL_MAP:
             return jsonify({"error": f"Unknown mode '{mode}'"}), 400
 
-        model, model_path, model_type = MODEL_MAP[mode]
+        model_path, model_type = MODEL_MAP[mode]
 
         if use_sahi:
             detections = run_sahi_inference(
@@ -206,6 +212,7 @@ def register_detect_routes(app):
                 use_polygon=use_polygon
             )
         else:
+            model = get_yolo_model(model_path)
             detections = []
             results = model.predict(filepath, imgsz=1024, conf=confidence)
             r = results[0]

@@ -35,25 +35,25 @@ const Layout = () => {
     dispatch(setConfidence(50));
     switch (location.pathname) {
       case "/yolo8":
-        dispatch(setDetectionMode("yolov8n"));
+        dispatch(setDetectionMode("yolov8n_german"));
         break;
       case "/yolo8-seg":
-        dispatch(setDetectionMode("yolov8n-seg"));
+        dispatch(setDetectionMode("yolov8n-seg_german"));
         break;
       case "/yolo11":
-        dispatch(setDetectionMode("yolo11n"));
+        dispatch(setDetectionMode("yolo11n_german"));
         break;
       case "/yolo11-seg":
-        dispatch(setDetectionMode("yolo11n-seg"));
+        dispatch(setDetectionMode("yolo11n-seg_german"));
         break;
       case "/yolo12":
-        dispatch(setDetectionMode("yolo12n"));
+        dispatch(setDetectionMode("yolo12n_german"));
         break;
       case "/ocr":
         dispatch(setDetectionMode("easyocr"));
         break;
       case "/":
-        dispatch(setDetectionMode("yolov8n"));
+        dispatch(setDetectionMode("yolov8n_german"));
         break;
       default:
         break;
