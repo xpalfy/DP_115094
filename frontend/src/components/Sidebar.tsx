@@ -21,10 +21,22 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   const location = useLocation();
   const active = (path: string) => location.pathname === path;
 
-  // State for collapsible sections
-  const [openYolo8, setOpenYolo8] = useState(true);
+  // Top-level collapsibles
+  const [openYolo8, setOpenYolo8] = useState(false);
   const [openYolo11, setOpenYolo11] = useState(false);
   const [openYolo12, setOpenYolo12] = useState(false);
+
+  // Language-level collapsibles (YOLOv8)
+  const [openY8German, setOpenY8German] = useState(false);
+  const [openY8French, setOpenY8French] = useState(false);
+
+  // Language-level collapsibles (YOLOv11)
+  const [openY11German, setOpenY11German] = useState(false);
+  const [openY11French, setOpenY11French] = useState(false);
+
+  // Language-level collapsibles (YOLOv12)
+  const [openY12German, setOpenY12German] = useState(false);
+  const [openY12French, setOpenY12French] = useState(false);
 
   return (
     <Drawer
@@ -70,18 +82,51 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
         </ListItemButton>
         <Collapse in={openYolo8} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <SidebarLink
-              to="/yolo8"
-              label="Character Detection (YOLOv8)"
-              active={active("/yolo8") || active("/")}
-              onClick={onClose}
-            />
-            <SidebarLink
-              to="/yolo8-seg"
-              label="Character Segmentation (YOLOv8)"
-              active={active("/yolo8-seg")}
-              onClick={onClose}
-            />
+            <SectionGroup
+              label="German"
+              flag="https://flagcdn.com/w40/de.png"
+              open={openY8German}
+              onToggle={() => setOpenY8German((v) => !v)}
+              level={1}
+            >
+              <SidebarLink
+                to="/yolo8-german"
+                label="Character Detection (YOLOv8)"
+                active={active("/yolo8-german") || active("/")}
+                onClick={onClose}
+                level={2}
+              />
+              <SidebarLink
+                to="/yolo8-seg-german"
+                label="Character Segmentation (YOLOv8)"
+                active={active("/yolo8-seg-german")}
+                onClick={onClose}
+                level={2}
+              />
+            </SectionGroup>
+
+            <SectionGroup
+              label="French"
+              flag="https://flagcdn.com/w40/fr.png"
+              open={openY8French}
+              onToggle={() => setOpenY8French((v) => !v)}
+              level={1}
+            >
+              <SidebarLink
+                to="/yolo8-french"
+                label="Character Detection (YOLOv8)"
+                active={active("/yolo8-french")}
+                onClick={onClose}
+                level={2}
+              />
+              <SidebarLink
+                to="/yolo8-seg-french"
+                label="Character Segmentation (YOLOv8)"
+                active={active("/yolo8-seg-french")}
+                onClick={onClose}
+                level={2}
+              />
+            </SectionGroup>
           </List>
         </Collapse>
 
@@ -92,18 +137,51 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
         </ListItemButton>
         <Collapse in={openYolo11} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <SidebarLink
-              to="/yolo11"
-              label="Character Detection (YOLOv11)"
-              active={active("/yolo11")}
-              onClick={onClose}
-            />
-            <SidebarLink
-              to="/yolo11-seg"
-              label="Character Segmentation (YOLOv11)"
-              active={active("/yolo11-seg")}
-              onClick={onClose}
-            />
+            <SectionGroup
+              label="German"
+              flag="https://flagcdn.com/w40/de.png"
+              open={openY11German}
+              onToggle={() => setOpenY11German((v) => !v)}
+              level={1}
+            >
+              <SidebarLink
+                to="/yolo11-german"
+                label="Character Detection (YOLOv11)"
+                active={active("/yolo11-german")}
+                onClick={onClose}
+                level={2}
+              />
+              <SidebarLink
+                to="/yolo11-seg-german"
+                label="Character Segmentation (YOLOv11)"
+                active={active("/yolo11-seg-german")}
+                onClick={onClose}
+                level={2}
+              />
+            </SectionGroup>
+
+            <SectionGroup
+              label="French"
+              flag="https://flagcdn.com/w40/fr.png"
+              open={openY11French}
+              onToggle={() => setOpenY11French((v) => !v)}
+              level={1}
+            >
+              <SidebarLink
+                to="/yolo11-french"
+                label="Character Detection (YOLOv11)"
+                active={active("/yolo11-french")}
+                onClick={onClose}
+                level={2}
+              />
+              <SidebarLink
+                to="/yolo11-seg-french"
+                label="Character Segmentation (YOLOv11)"
+                active={active("/yolo11-seg-french")}
+                onClick={onClose}
+                level={2}
+              />
+            </SectionGroup>
           </List>
         </Collapse>
 
@@ -114,12 +192,37 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
         </ListItemButton>
         <Collapse in={openYolo12} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <SidebarLink
-              to="/yolo12"
-              label="Character Detection (YOLOv12)"
-              active={active("/yolo12")}
-              onClick={onClose}
-            />
+            <SectionGroup
+              label="German"
+              flag="https://flagcdn.com/w40/de.png"
+              open={openY12German}
+              onToggle={() => setOpenY12German((v) => !v)}
+              level={1}
+            >
+              <SidebarLink
+                to="/yolo12-german"
+                label="Character Detection (YOLOv12)"
+                active={active("/yolo12-german")}
+                onClick={onClose}
+                level={2}
+              />
+            </SectionGroup>
+
+            <SectionGroup
+              label="French"
+              flag="https://flagcdn.com/w40/fr.png"
+              open={openY12French}
+              onToggle={() => setOpenY12French((v) => !v)}
+              level={1}
+            >
+              <SidebarLink
+                to="/yolo12-french"
+                label="Character Detection (YOLOv12)"
+                active={active("/yolo12-french")}
+                onClick={onClose}
+                level={2}
+              />
+            </SectionGroup>
           </List>
         </Collapse>
 
@@ -130,6 +233,7 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
           label="Optical Character Recognition (OCR)"
           active={active("/ocr")}
           onClick={onClose}
+          level={0}
         />
       </List>
 
@@ -145,48 +249,103 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   );
 };
 
-// Reusable sidebar link
+/** 2nd-level group (e.g. German/French) with optional flag */
+const SectionGroup = ({
+  label,
+  flag,
+  open,
+  onToggle,
+  level,
+  children,
+}: {
+  label: string;
+  flag?: string;
+  open: boolean;
+  onToggle: () => void;
+  level: 0 | 1 | 2;
+  children: React.ReactNode;
+}) => {
+  const pl = level === 0 ? 2 : level === 1 ? 4 : 6;
+
+  return (
+    <>
+      <ListItemButton onClick={onToggle} sx={{ pl }}>
+        <ListItemText
+          primary={
+            <span
+              style={{ display: "inline-flex", alignItems: "center", gap: 10 }}
+            >
+              {flag && (
+                <img
+                  src={flag}
+                  alt={label}
+                  style={{ width: 22, height: 15, borderRadius: 2 }}
+                />
+              )}
+              {label}
+            </span>
+          }
+        />
+        {open ? <ExpandLess /> : <ExpandMore />}
+      </ListItemButton>
+
+      <Collapse in={open} timeout="auto" unmountOnExit>
+        <List component="div" disablePadding>
+          {children}
+        </List>
+      </Collapse>
+    </>
+  );
+};
+
+// Reusable sidebar link (supports nesting via level)
 const SidebarLink = ({
   to,
   label,
   active,
   onClick,
+  level,
 }: {
   to: string;
   label: string;
   active: boolean;
   onClick: () => void;
-}) => (
-  <ListItemButton
-    component={Link}
-    to={to}
-    onClick={onClick}
-    selected={active}
-    sx={{
-      pl: 4,
-      borderRadius: 1,
-      mx: 1,
-      my: 0.3,
-      "&.Mui-selected": {
-        backgroundColor: "rgba(255,255,255,0.2)",
-        fontWeight: "bold",
-      },
-      "&:hover": {
-        backgroundColor: "rgba(255,255,255,0.15)",
-      },
-    }}
-  >
-    <ListItemText
-      primaryTypographyProps={{
-        sx: {
-          color: active ? "#fff" : "rgba(255,255,255,0.9)",
-          fontWeight: active ? "bold" : "normal",
-          fontSize: 14,
+  level: 0 | 1 | 2;
+}) => {
+  const pl = level === 0 ? 2 : level === 1 ? 6 : 8;
+
+  return (
+    <ListItemButton
+      component={Link}
+      to={to}
+      onClick={onClick}
+      selected={active}
+      sx={{
+        pl,
+        borderRadius: 1,
+        mx: 1,
+        my: 0.3,
+        "&.Mui-selected": {
+          backgroundColor: "rgba(255,255,255,0.2)",
+          fontWeight: "bold",
+        },
+        "&:hover": {
+          backgroundColor: "rgba(255,255,255,0.15)",
         },
       }}
-      primary={label}
-    />
-  </ListItemButton>
-);
+    >
+      <ListItemText
+        primaryTypographyProps={{
+          sx: {
+            color: active ? "#fff" : "rgba(255,255,255,0.9)",
+            fontWeight: active ? "bold" : "normal",
+            fontSize: 14,
+          },
+        }}
+        primary={label}
+      />
+    </ListItemButton>
+  );
+};
 
 export default Sidebar;

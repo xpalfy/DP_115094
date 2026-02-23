@@ -25,7 +25,7 @@ import PolygonToggle from "../components/DetectionPage/PolygonToggle";
 interface Props {
   type: string;
   modes: string[];
-  title: string;
+  title: React.ReactNode;
   gradient: string;
   polygon: boolean;
 }
