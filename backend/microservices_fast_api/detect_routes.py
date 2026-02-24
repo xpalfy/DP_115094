@@ -3,11 +3,15 @@ import cv2
 import pytesseract
 import easyocr
 import numpy as np
-from flask import request, jsonify
+from functools import lru_cache
+from typing import Optional
+
+from fastapi import FastAPI, UploadFile, File, Form
+from fastapi.responses import JSONResponse
+
 from ultralytics import YOLO
 from sahi import AutoDetectionModel
 from sahi.predict import get_sliced_prediction
-from functools import lru_cache
 
 # ===================================================
 # OCR
@@ -120,7 +124,6 @@ def sahi_mask_to_polygon(det, min_area=20):
 
     return best.reshape(-1, 2).astype(float).tolist()
 
-
 def run_sahi_inference(model_path, image_path, model_type="yolov8", conf=0.5, use_polygon=False):
     detection_model = get_sahi_model(model_type, model_path, conf)
 
@@ -145,31 +148,39 @@ def run_sahi_inference(model_path, image_path, model_type="yolov8", conf=0.5, us
 
     return detections
 
-
 # ===================================================
 # Routes
 # ===================================================
 
-def register_detect_routes(app):
+def register_detect_routes(app: FastAPI):
 
-    @app.route("/detect", methods=["POST"])
-    def detect_handler():
-        if "file" not in request.files:
-            return jsonify({"error": "No file uploaded"}), 400
+    @app.post("/detect")
+    async def detect_handler(
+        file: Optional[UploadFile] = File(None),
+        mode: str = Form("yolov8n-german"),
+        useSAHI: str = Form("false"),
+        usePolygon: str = Form("false"),
+        confidence: str = Form("50")
+    ):
+        use_sahi = str(useSAHI).lower() == "true"
+        use_polygon = str(usePolygon).lower() == "true"
+        confidence_val = float(confidence) / 100.0
 
-        file = request.files["file"]
-        mode = request.form.get("mode", "yolov8n-german")
-        use_sahi = request.form.get("useSAHI", "false").lower() == "true"
-        use_polygon = request.form.get("usePolygon", "false").lower() == "true"
-        confidence = float(request.form.get("confidence", 50)) / 100.0
+        if file is None:
+            return JSONResponse(status_code=400, content={"error": "No file uploaded"})
 
         os.makedirs("uploads", exist_ok=True)
         filepath = os.path.join("uploads", file.filename)
-        file.save(filepath)
+
+        contents = await file.read()
+        with open(filepath, "wb") as f:
+            f.write(contents)
 
         # OCR
         if mode == "pytesseract":
             img = cv2.imread(filepath)
+            if img is None:
+                return JSONResponse(status_code=400, content={"error": "Invalid image"})
             h, _, _ = img.shape
             detections = []
 
@@ -180,26 +191,27 @@ def register_detect_routes(app):
                     "confidence": 1.0,
                     "bbox": [int(x1), int(h - int(y2)), int(x2), int(h - int(y1))]
                 })
-            return jsonify({"mode": mode, "detections": detections})
+            return {"mode": mode, "detections": detections}
 
         if mode == "easyocr":
             img = cv2.imread(filepath)
+            if img is None:
+                return JSONResponse(status_code=400, content={"error": "Invalid image"})
             detections = []
 
             for bbox, text, prob in easyocr_reader.readtext(img):
                 xs = [float(p[0]) for p in bbox]
                 ys = [float(p[1]) for p in bbox]
-
                 detections.append({
                     "class": str(text),
                     "confidence": float(prob),
                     "bbox": [float(min(xs)), float(min(ys)), float(max(xs)), float(max(ys))]
                 })
-            return jsonify({"mode": mode, "detections": detections})
+            return {"mode": mode, "detections": detections}
 
         # YOLO / SAHI
         if mode not in MODEL_MAP:
-            return jsonify({"error": f"Unknown mode '{mode}'"}), 400
+            return JSONResponse(status_code=400, content={"error": f"Unknown mode '{mode}'"})
 
         model_path, model_type = MODEL_MAP[mode]
 
@@ -208,13 +220,13 @@ def register_detect_routes(app):
                 model_path=model_path,
                 image_path=filepath,
                 model_type=model_type,
-                conf=confidence,
+                conf=confidence_val,
                 use_polygon=use_polygon
             )
         else:
             model = get_yolo_model(model_path)
             detections = []
-            results = model.predict(filepath, imgsz=1024, conf=confidence)
+            results = model.predict(filepath, imgsz=1024, conf=confidence_val)
             r = results[0]
 
             for i, box in enumerate(r.boxes):
@@ -235,9 +247,9 @@ def register_detect_routes(app):
 
                 detections.append(det)
 
-        return jsonify({
+        return {
             "mode": mode,
             "useSAHI": use_sahi,
             "usePolygon": use_polygon,
             "detections": detections
-        })
+        }

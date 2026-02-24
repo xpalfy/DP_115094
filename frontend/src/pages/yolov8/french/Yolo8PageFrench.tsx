@@ -1,5 +1,6 @@
 import React from "react";
 import DetectionPage from "../../DetectionPage";
+import frFlag from "../../../assets/images/fr.png";
 
 const Yolo8PageFrench: React.FC = () => {
   return (
@@ -14,7 +15,7 @@ const Yolo8PageFrench: React.FC = () => {
       title={
         <span style={{ display: "inline-flex", alignItems: "center", gap: 20 }}>
           <img
-            src="https://flagcdn.com/w40/fr.png"
+            src={frFlag}
             alt="FR"
             style={{ width: 28, height: 20, borderRadius: 3 }}
           />

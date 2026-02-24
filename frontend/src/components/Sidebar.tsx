@@ -14,6 +14,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import { Link, useLocation } from "react-router-dom";
+import deFlag from "../assets/images/de.png";
+import frFlag from "../assets/images/fr.png";
 
 const drawerWidth = 240;
 
@@ -84,7 +86,7 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
           <List component="div" disablePadding>
             <SectionGroup
               label="German"
-              flag="https://flagcdn.com/w40/de.png"
+              flag={deFlag}
               open={openY8German}
               onToggle={() => setOpenY8German((v) => !v)}
               level={1}
@@ -107,7 +109,7 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
 
             <SectionGroup
               label="French"
-              flag="https://flagcdn.com/w40/fr.png"
+              flag={frFlag}
               open={openY8French}
               onToggle={() => setOpenY8French((v) => !v)}
               level={1}
@@ -139,7 +141,7 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
           <List component="div" disablePadding>
             <SectionGroup
               label="German"
-              flag="https://flagcdn.com/w40/de.png"
+              flag={deFlag}
               open={openY11German}
               onToggle={() => setOpenY11German((v) => !v)}
               level={1}
@@ -162,7 +164,7 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
 
             <SectionGroup
               label="French"
-              flag="https://flagcdn.com/w40/fr.png"
+              flag={frFlag}
               open={openY11French}
               onToggle={() => setOpenY11French((v) => !v)}
               level={1}
@@ -194,7 +196,7 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
           <List component="div" disablePadding>
             <SectionGroup
               label="German"
-              flag="https://flagcdn.com/w40/de.png"
+              flag={deFlag}
               open={openY12German}
               onToggle={() => setOpenY12German((v) => !v)}
               level={1}
@@ -210,7 +212,7 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
 
             <SectionGroup
               label="French"
-              flag="https://flagcdn.com/w40/fr.png"
+              flag={frFlag}
               open={openY12French}
               onToggle={() => setOpenY12French((v) => !v)}
               level={1}
