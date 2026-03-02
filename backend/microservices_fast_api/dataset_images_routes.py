@@ -4,7 +4,7 @@ import random
 from fastapi import FastAPI, Query
 from fastapi.responses import JSONResponse, FileResponse
 
-ALLOWED_VERSIONS = {"v4.1", "v4", "v5"}
+ALLOWED_VERSIONS = {"v4", "v5"}
 
 def get_dataset_dir(version: str) -> str:
     if version not in ALLOWED_VERSIONS:

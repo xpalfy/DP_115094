@@ -20,7 +20,7 @@ const AverageImagesPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState<string | null>(null);
-  const [version, setVersion] = useState<"v4" | "v5">("v4");
+  const [version, setVersion] = useState<"v4" | "v5" | "v6">("v4");
 
   const classKeys = Object.keys(images);
 
@@ -32,7 +32,7 @@ const AverageImagesPage: React.FC = () => {
       setLoading(true);
       try {
         const res = await fetch(
-          `http://localhost:5000/average_images?v=${version}`
+          `http://localhost:5000/average_images?v=${version}`,
         );
         if (!res.ok) throw new Error(`Server returned ${res.status}`);
 
@@ -81,7 +81,7 @@ const AverageImagesPage: React.FC = () => {
 
       setSelectedClass(classKeys[newIndex]);
     },
-    [selectedClass, classKeys]
+    [selectedClass, classKeys],
   );
 
   useEffect(() => {
@@ -148,11 +148,14 @@ const AverageImagesPage: React.FC = () => {
                 labelId="version-select-label"
                 value={version}
                 label="Dataset version"
-                onChange={(e) => setVersion(e.target.value as "v4" | "v5")}
+                onChange={(e) =>
+                  setVersion(e.target.value as "v4" | "v5" | "v6")
+                }
                 sx={{ minWidth: 160 }}
               >
                 <MenuItem value="v4">v4</MenuItem>
                 <MenuItem value="v5">v5</MenuItem>
+                <MenuItem value="v6">v6</MenuItem>
               </Select>
             </FormControl>
           </Box>

@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 NUM_IMAGES = 6
-IMAGE_DIR = "../../../dataset/v5/images"
-LABEL_DIR = "../../../dataset/v5/labels"
+IMAGE_DIR = "../../../dataset/v6/images"
+LABEL_DIR = "../../../dataset/v6/labels"
 
 image_files = [
     f for f in os.listdir(IMAGE_DIR)

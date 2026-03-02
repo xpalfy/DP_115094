@@ -34,7 +34,7 @@ const SampleImagesPage: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
-  const [version, setVersion] = useState<"v4" | "v5">("v4");
+  const [version, setVersion] = useState<"v4" | "v5" | "v6">("v4");
   const [numImages, setNumImages] = useState<number>(10);
 
   const fetchImages = async () => {
@@ -111,11 +111,14 @@ const SampleImagesPage: React.FC = () => {
                 labelId="version-select-label"
                 value={version}
                 label="Dataset version"
-                onChange={(e) => setVersion(e.target.value as "v4" | "v5")}
+                onChange={(e) =>
+                  setVersion(e.target.value as "v4" | "v5" | "v6")
+                }
                 sx={{ minWidth: 160 }}
               >
                 <MenuItem value="v4">v4</MenuItem>
                 <MenuItem value="v5">v5</MenuItem>
+                <MenuItem value="v6">v6</MenuItem>
               </Select>
             </FormControl>
             {/* Number selector */}

@@ -2,7 +2,7 @@ import os
 import yaml
 from flask import request, jsonify, send_from_directory
 
-ALLOWED_VERSIONS = {"v4.1", "v4", "v5"}
+ALLOWED_VERSIONS = {"v4", "v5", "v6"}
 
 def get_dataset_dir(version: str) -> str:
     if version not in ALLOWED_VERSIONS:
