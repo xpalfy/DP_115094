@@ -2,10 +2,10 @@ import os
 import cv2
 import numpy as np
 
-# INPUT: v5.1
-dataset_path = "../../../dataset/v5.1"
-# OUTPUT: v5.2
-output_dataset_path = "../../../dataset/v5.2"
+# INPUT: v6.1
+dataset_path = "../../../dataset/v6.1"
+# OUTPUT: v6.2
+output_dataset_path = "../../../dataset/v6.2"
 
 os.makedirs(os.path.join(output_dataset_path, "images"), exist_ok=True)
 os.makedirs(os.path.join(output_dataset_path, "labels"), exist_ok=True)
@@ -112,4 +112,4 @@ for image_file in os.listdir(images_path):
                 with open(os.path.join(out_labels_path, out_lbl_name), "w") as f:
                     f.writelines(new_annotations)
 
-print("Done: v5.1 -> v5.2 slicing completed. Only annotated tiles were saved.")
+print("Done: v6.1 -> v6.2 slicing completed. Only annotated tiles were saved.")

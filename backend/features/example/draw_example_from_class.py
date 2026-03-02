@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-BASE_DIR = "../../../dataset/v5"
+BASE_DIR = "../../../dataset/v6"
 IMAGE_DIR = os.path.join(BASE_DIR, "images")
 LABEL_DIR = os.path.join(BASE_DIR, "labels")
 NOTES_PATH = os.path.join(BASE_DIR, "notes.json")

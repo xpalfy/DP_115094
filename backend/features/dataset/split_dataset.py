@@ -3,8 +3,8 @@ import shutil
 import random
 
 # ---- DATASET PATHS ----
-input_dataset = "../../dataset/v5.2"
-output_dataset = "../../dataset/v5.4"
+input_dataset = "../../../dataset/v6.2"
+output_dataset = "../../../dataset/v6.4"
 
 images_path = os.path.join(input_dataset, "images")
 labels_path = os.path.join(input_dataset, "labels")

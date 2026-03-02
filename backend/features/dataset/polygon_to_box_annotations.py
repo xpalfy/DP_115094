@@ -1,8 +1,8 @@
 import os
 import shutil
 
-SOURCE_DIR = "../../../dataset/v5.4"
-TARGET_DIR = "../../../dataset/v5.5"
+SOURCE_DIR = "../../../dataset/v6.4"
+TARGET_DIR = "../../../dataset/v6.5"
 COPY_IMAGES = True
 
 def ensure_dir(path):

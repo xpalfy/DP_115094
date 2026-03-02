@@ -3,8 +3,8 @@ from pathlib import Path
 from collections import Counter
 import yaml
 
-SRC_DATA_YAML = Path("../../../dataset/v5/data.yaml")
-DST_ROOT = Path("../../../dataset/v5.1")
+SRC_DATA_YAML = Path("../../../dataset/v6/data.yaml")
+DST_ROOT = Path("../../../dataset/v6.1")
 
 MIN_COUNT = 100
 REMAP_CLASSES = True
