@@ -42,6 +42,16 @@ MODEL_MAP = {
     "yolo11m-seg-german": ("runs/german/yolo11/segment/train_yolo11m-seg/v1_yolo11m-seg/weights/best.pt", "yolov8"),
     "yolo11l-seg-german": ("runs/german/yolo11/segment/train_yolo11l-seg/v1_yolo11l-seg/weights/best.pt", "yolov8"),
 
+    "yolo26n-german": ("runs/german/yolo26/detect/train_yolo26n/v1_yolo26n/weights/best.pt", "yolov8"),
+    "yolo26s-german": ("runs/german/yolo26/detect/train_yolo26s/v1_yolo26s/weights/best.pt", "yolov8"),
+    "yolo26m-german": ("runs/german/yolo26/detect/train_yolo26m/v1_yolo26m/weights/best.pt", "yolov8"),
+    "yolo26l-german": ("runs/german/yolo26/detect/train_yolo26l/v1_yolo26l/weights/best.pt", "yolov8"),
+
+    "yolo26n-seg-german": ("runs/german/yolo26/segment/train_yolo26n-seg/v1_yolo26n-seg/weights/best.pt", "yolov8"),
+    "yolo26s-seg-german": ("runs/german/yolo26/segment/train_yolo26s-seg/v1_yolo26s-seg/weights/best.pt", "yolov8"),
+    "yolo26m-seg-german": ("runs/german/yolo26/segment/train_yolo26m-seg/v1_yolo26m-seg/weights/best.pt", "yolov8"),
+    "yolo26l-seg-german": ("runs/german/yolo26/segment/train_yolo26l-seg/v1_yolo26l-seg/weights/best.pt", "yolov8"),
+
     "yolo12n-german": ("runs/german/yolo12/detect/train_yolo12n/v1_yolo12n/weights/best.pt", "yolov8"),
     "yolo12s-german": ("runs/german/yolo12/detect/train_yolo12s/v1_yolo12s/weights/best.pt", "yolov8"),
     "yolo12m-german": ("runs/german/yolo12/detect/train_yolo12m/v1_yolo12m/weights/best.pt", "yolov8"),
@@ -68,10 +78,51 @@ MODEL_MAP = {
     "yolo11m-seg-french": ("runs/french/yolo11/segment/train_yolo11m-seg/v1_yolo11m-seg/weights/best.pt", "yolov8"),
     "yolo11l-seg-french": ("runs/french/yolo11/segment/train_yolo11l-seg/v1_yolo11l-seg/weights/best.pt", "yolov8"),
 
+    "yolo26n-french": ("runs/french/yolo26/detect/train_yolo26n/v1_yolo26n/weights/best.pt", "yolov8"),
+    "yolo26s-french": ("runs/french/yolo26/detect/train_yolo26s/v1_yolo26s/weights/best.pt", "yolov8"),
+    "yolo26m-french": ("runs/french/yolo26/detect/train_yolo26m/v1_yolo26m/weights/best.pt", "yolov8"),
+    "yolo26l-french": ("runs/french/yolo26/detect/train_yolo26l/v1_yolo26l/weights/best.pt", "yolov8"),
+
+    "yolo26n-seg-french": ("runs/french/yolo26/segment/train_yolo26n-seg/v1_yolo26n-seg/weights/best.pt", "yolov8"),
+    "yolo26s-seg-french": ("runs/french/yolo26/segment/train_yolo26s-seg/v1_yolo26s-seg/weights/best.pt", "yolov8"),
+    "yolo26m-seg-french": ("runs/french/yolo26/segment/train_yolo26m-seg/v1_yolo26m-seg/weights/best.pt", "yolov8"),
+    "yolo26l-seg-french": ("runs/french/yolo26/segment/train_yolo26l-seg/v1_yolo26l-seg/weights/best.pt", "yolov8"),
+
     "yolo12n-french": ("runs/french/yolo12/detect/train_yolo12n/v1_yolo12n/weights/best.pt", "yolov8"),
     "yolo12s-french": ("runs/french/yolo12/detect/train_yolo12s/v1_yolo12s/weights/best.pt", "yolov8"),
     "yolo12m-french": ("runs/french/yolo12/detect/train_yolo12m/v1_yolo12m/weights/best.pt", "yolov8"),
     "yolo12l-french": ("runs/french/yolo12/detect/train_yolo12l/v1_yolo12l/weights/best.pt", "yolov8"),
+
+    # ---------------- COMBINED ----------------
+    "yolov8n-combined": ("runs/combined/yolov8/detect/train_yolov8n/v1_yolov8n/weights/best.pt", "yolov8"),
+    "yolov8s-combined": ("runs/combined/yolov8/detect/train_yolov8s/v1_yolov8s/weights/best.pt", "yolov8"),
+    "yolov8m-combined": ("runs/combined/yolov8/detect/train_yolov8m/v1_yolov8m/weights/best.pt", "yolov8"),
+    "yolov8l-combined": ("runs/combined/yolov8/detect/train_yolov8l/v1_yolov8l/weights/best.pt", "yolov8"),
+
+    "yolov8n-seg-combined": ("runs/combined/yolov8/segment/train_yolov8n-seg/v1_yolov8n-seg/weights/best.pt", "yolov8"),
+    "yolov8s-seg-combined": ("runs/combined/yolov8/segment/train_yolov8s-seg/v1_yolov8s-seg/weights/best.pt", "yolov8"),
+    "yolov8m-seg-combined": ("runs/combined/yolov8/segment/train_yolov8m-seg/v1_yolov8m-seg/weights/best.pt", "yolov8"),
+    "yolov8l-seg-combined": ("runs/combined/yolov8/segment/train_yolov8l-seg/v1_yolov8l-seg/weights/best.pt", "yolov8"),
+
+    "yolo11n-combined": ("runs/combined/yolo11/detect/train_yolo11n/v1_yolo11n/weights/best.pt", "yolov8"),
+    "yolo11s-combined": ("runs/combined/yolo11/detect/train_yolo11s/v1_yolo11s/weights/best.pt", "yolov8"),
+    "yolo11m-combined": ("runs/combined/yolo11/detect/train_yolo11m/v1_yolo11m/weights/best.pt", "yolov8"),
+    "yolo11l-combined": ("runs/combined/yolo11/detect/train_yolo11l/v1_yolo11l/weights/best.pt", "yolov8"),
+
+    "yolo11n-seg-combined":  ("runs/combined/yolo11/segment/train_yolo11n-seg/v1_yolo11n-seg/weights/best.pt", "yolov8"),
+    "yolo11s-seg-combined":  ("runs/combined/yolo11/segment/train_yolo11s-seg/v1_yolo11s-seg/weights/best.pt", "yolov8"),
+    "yolo11m-seg-combined":  ("runs/combined/yolo11/segment/train_yolo11m-seg/v1_yolo11m-seg/weights/best.pt", "yolov8"),
+    "yolo11l-seg-combined":  ("runs/combined/yolo11/segment/train_yolo11l-seg/v1_yolo11l-seg/weights/best.pt", "yolov8"),
+
+    "yolo26n-combined": ("runs/combined/yolo26/detect/train_yolo26n/v1_yolo26n/weights/best.pt", "yolov8"),
+    "yolo26s-combined": ("runs/combined/yolo26/detect/train_yolo26s/v1_yolo26s/weights/best.pt", "yolov8"),
+    "yolo26m-combined": ("runs/combined/yolo26/detect/train_yolo26m/v1_yolo26m/weights/best.pt", "yolov8"),
+    "yolo26l-combined": ("runs/combined/yolo26/detect/train_yolo26l/v1_yolo26l/weights/best.pt", "yolov8"),
+
+    "yolo26n-seg-combined": ("runs/combined/yolo26/segment/train_yolo26n-seg/v1_yolo26n-seg/weights/best.pt", "yolov8"),
+    "yolo26s-seg-combined": ("runs/combined/yolo26/segment/train_yolo26s-seg/v1_yolo26s-seg/weights/best.pt", "yolov8"),
+    "yolo26m-seg-combined": ("runs/combined/yolo26/segment/train_yolo26m-seg/v1_yolo26m-seg/weights/best.pt", "yolov8"),
+    "yolo26l-seg-combined": ("runs/combined/yolo26/segment/train_yolo26l-seg/v1_yolo26l-seg/weights/best.pt", "yolov8"),
 }
 
 # ===================================================

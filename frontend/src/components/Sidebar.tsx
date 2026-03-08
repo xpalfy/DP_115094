@@ -27,18 +27,26 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   const [openYolo8, setOpenYolo8] = useState(false);
   const [openYolo11, setOpenYolo11] = useState(false);
   const [openYolo12, setOpenYolo12] = useState(false);
+  const [openYolo26, setOpenYolo26] = useState(false);
 
   // Language-level collapsibles (YOLOv8)
   const [openY8German, setOpenY8German] = useState(false);
   const [openY8French, setOpenY8French] = useState(false);
+  const [openY8Combined, setOpenY8Combined] = useState(false);
 
   // Language-level collapsibles (YOLOv11)
   const [openY11German, setOpenY11German] = useState(false);
   const [openY11French, setOpenY11French] = useState(false);
+  const [openY11Combined, setOpenY11Combined] = useState(false);
 
   // Language-level collapsibles (YOLOv12)
   const [openY12German, setOpenY12German] = useState(false);
   const [openY12French, setOpenY12French] = useState(false);
+
+  // Language-level collapsibles (YOLOv26)
+  const [openY26German, setOpenY26German] = useState(false);
+  const [openY26French, setOpenY26French] = useState(false);
+  const [openY26Combined, setOpenY26Combined] = useState(false);
 
   return (
     <Drawer
@@ -129,6 +137,28 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
                 level={2}
               />
             </SectionGroup>
+
+            <SectionGroup
+              label="Combined"
+              open={openY8Combined}
+              onToggle={() => setOpenY8Combined((v) => !v)}
+              level={1}
+            >
+              <SidebarLink
+                to="/yolo8-combined"
+                label="Combined Detection & Segmentation (YOLOv8)"
+                active={active("/yolo8-combined")}
+                onClick={onClose}
+                level={2}
+              />
+              <SidebarLink
+                to="/yolo8-seg-combined"
+                label="Combined Segmentation (YOLOv8)"
+                active={active("/yolo8-seg-combined")}
+                onClick={onClose}
+                level={2}
+              />
+            </SectionGroup>
           </List>
         </Collapse>
 
@@ -180,6 +210,105 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
                 to="/yolo11-seg-french"
                 label="Character Segmentation (YOLOv11)"
                 active={active("/yolo11-seg-french")}
+                onClick={onClose}
+                level={2}
+              />
+            </SectionGroup>
+
+            <SectionGroup
+              label="Combined"
+              open={openY11Combined}
+              onToggle={() => setOpenY11Combined((v) => !v)}
+              level={1}
+            >
+              <SidebarLink
+                to="/yolo11-combined"
+                label="Combined Detection & Segmentation (YOLOv11)"
+                active={active("/yolo11-combined")}
+                onClick={onClose}
+                level={2}
+              />
+              <SidebarLink
+                to="/yolo11-seg-combined"
+                label="Combined Segmentation (YOLOv11)"
+                active={active("/yolo11-seg-combined")}
+                onClick={onClose}
+                level={2}
+              />
+            </SectionGroup>
+          </List>
+        </Collapse>
+
+        {/* YOLOv26 Section */}
+        <ListItemButton onClick={() => setOpenYolo26(!openYolo26)}>
+          <ListItemText primary="YOLOv26 Models" />
+          {openYolo26 ? <ExpandLess /> : <ExpandMore />}
+        </ListItemButton>
+        <Collapse in={openYolo26} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <SectionGroup
+              label="German"
+              flag={deFlag}
+              open={openY26German}
+              onToggle={() => setOpenY26German((v) => !v)}
+              level={1}
+            >
+              <SidebarLink
+                to="/yolo26-german"
+                label="Character Detection (YOLOv26)"
+                active={active("/yolo26-german")}
+                onClick={onClose}
+                level={2}
+              />
+              <SidebarLink
+                to="/yolo26-seg-german"
+                label="Character Segmentation (YOLOv26)"
+                active={active("/yolo26-seg-german")}
+                onClick={onClose}
+                level={2}
+              />
+            </SectionGroup>
+
+            <SectionGroup
+              label="French"
+              flag={frFlag}
+              open={openY26French}
+              onToggle={() => setOpenY26French((v) => !v)}
+              level={1}
+            >
+              <SidebarLink
+                to="/yolo26-french"
+                label="Character Detection (YOLOv26)"
+                active={active("/yolo26-french")}
+                onClick={onClose}
+                level={2}
+              />
+              <SidebarLink
+                to="/yolo26-seg-french"
+                label="Character Segmentation (YOLOv26)"
+                active={active("/yolo26-seg-french")}
+                onClick={onClose}
+                level={2}
+              />
+            </SectionGroup>
+
+            <SectionGroup
+              label="Combined"
+              open={openY26Combined}
+              onToggle={() => setOpenY26Combined((v) => !v)}
+              level={1}
+            >
+              <SidebarLink
+                to="/yolo26-combined"
+                label="Combined Detection & Segmentation (YOLOv26)"
+                active={active("/yolo26-combined")}
+                onClick={onClose}
+                level={2}
+              />
+              <SidebarLink
+                to="/yolo26-seg-combined"
+                label="Combined Segmentation (YOLOv26)"
+                active={active("/yolo26-seg-combined")}
                 onClick={onClose}
                 level={2}
               />
