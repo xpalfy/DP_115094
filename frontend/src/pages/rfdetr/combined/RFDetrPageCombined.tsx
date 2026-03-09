@@ -2,15 +2,16 @@ import React from "react";
 import DetectionPage from "../../DetectionPage";
 import combinedFlag from "../../../assets/images/combined.png";
 
-const Yolo26SegPageCombined: React.FC = () => {
+const RFDetrPageCombined: React.FC = () => {
   return (
     <DetectionPage
-      type="yolo"
+      type="rfdetr"
       modes={[
-        "yolo26n-seg-combined",
-        "yolo26s-seg-combined",
-        "yolo26m-seg-combined",
-        "yolo26l-seg-combined",
+        "rfdetr-nano-combined",
+        "rfdetr-small-combined",
+        "rfdetr-base-combined",
+        "rfdetr-medium-combined",
+        "rfdetr-large-combined",
       ]}
       title={
         <span style={{ display: "inline-flex", alignItems: "center", gap: 20 }}>
@@ -19,13 +20,13 @@ const Yolo26SegPageCombined: React.FC = () => {
             alt="Combined"
             style={{ width: 28, borderRadius: 3 }}
           />
-          YOLOv26 Object Segmentation
+          RFDetr Object Detection
         </span>
       }
       gradient="linear-gradient(135deg, #43cea2, #185a9d)"
-      polygon={true}
+      polygon={false}
     />
   );
 };
 
-export default Yolo26SegPageCombined;
+export default RFDetrPageCombined;

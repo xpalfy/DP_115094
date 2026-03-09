@@ -3,11 +3,26 @@ import cv2
 import pytesseract
 import easyocr
 import numpy as np
+from PIL import Image
 from flask import request, jsonify
 from ultralytics import YOLO
+from rfdetr import (
+    RFDETRBase,
+    RFDETRNano,
+    RFDETRSmall,
+    RFDETRLarge,
+    RFDETRMedium,
+    RFDETRSegNano,
+    RFDETRSegSmall
+)
 from sahi import AutoDetectionModel
 from sahi.predict import get_sliced_prediction
 from functools import lru_cache
+
+CLASS_NAMES = [
+    "a","b","c","d","e","f","g","h","i","l",
+    "m","n","o","p","r","s","t","u","v","w","z"
+]
 
 # ===================================================
 # OCR
@@ -123,6 +138,15 @@ MODEL_MAP = {
     "yolo26s-seg-combined": ("runs/combined/yolo26/segment/train_yolo26s-seg/v1_yolo26s-seg/weights/best.pt", "yolov8"),
     "yolo26m-seg-combined": ("runs/combined/yolo26/segment/train_yolo26m-seg/v1_yolo26m-seg/weights/best.pt", "yolov8"),
     "yolo26l-seg-combined": ("runs/combined/yolo26/segment/train_yolo26l-seg/v1_yolo26l-seg/weights/best.pt", "yolov8"),
+
+    "rfdetr-nano-combined": ("runs/combined/rfdetr/detect/train_rf-detr-nano/checkpoint_best_total.pth", "rfdetr"),
+    "rfdetr-small-combined": ("runs/combined/rfdetr/detect/train_rf-detr-small/checkpoint_best_total.pth", "rfdetr"),
+    "rfdetr-base-combined": ("runs/combined/rfdetr/detect/train_rf-detr-base/checkpoint_best_total.pth", "rfdetr"),
+    "rfdetr-medium-combined": ("runs/combined/rfdetr/detect/train_rf-detr-medium/checkpoint_best_total.pth", "rfdetr"),
+    "rfdetr-large-combined": ("runs/combined/rfdetr/detect/train_rf-detr-large/checkpoint_best_total.pth", "rfdetr"),
+
+    "rfdetr-nano-seg-combined": ("runs/combined/rfdetr/segment/train_rf-detr-seg-nano/checkpoint_best_total.pth", "rfdetr"),
+    "rfdetr-small-seg-combined": ("runs/combined/rfdetr/segment/train_rf-detr-seg-small/checkpoint_best_total.pth", "rfdetr"),
 }
 
 # ===================================================
@@ -133,7 +157,34 @@ MODEL_MAP = {
 def get_yolo_model(model_path: str) -> YOLO:
     return YOLO(model_path)
 
-@lru_cache(maxsize=32)
+@lru_cache(maxsize=4)
+def get_rfdetr_model(model_path: str):
+
+    # segmentation models
+    if "seg-nano" in model_path:
+        model_cls = RFDETRSegNano
+    elif "seg-small" in model_path:
+        model_cls = RFDETRSegSmall
+
+    # detection models
+    elif "nano" in model_path:
+        model_cls = RFDETRNano
+    elif "small" in model_path:
+        model_cls = RFDETRSmall
+    elif "medium" in model_path:
+        model_cls = RFDETRMedium
+    elif "large" in model_path:
+        model_cls = RFDETRLarge
+    else:
+        model_cls = RFDETRBase
+
+    return model_cls(
+        pretrain_weights=model_path,
+        num_classes=len(CLASS_NAMES),
+        device="cuda"
+    )
+
+@lru_cache(maxsize=16)
 def get_sahi_model(model_type: str, model_path: str, conf: float):
     return AutoDetectionModel.from_pretrained(
         model_type=model_type,
@@ -155,8 +206,9 @@ def sahi_mask_to_polygon(det, min_area=20):
     if bool_mask is None and hasattr(m, "to_bool_mask"):
         try:
             bool_mask = m.to_bool_mask()
-        except Exception:
+        except (AttributeError, ValueError, TypeError):
             return None
+
     if bool_mask is None:
         return None
 
@@ -196,6 +248,59 @@ def run_sahi_inference(model_path, image_path, model_type="yolov8", conf=0.5, us
 
     return detections
 
+# ===================================================
+# RF-DETR
+# ===================================================
+
+def run_rfdetr_inference(model_path, image_path, conf=0.5, use_polygon=False):
+
+    model = get_rfdetr_model(model_path)
+
+    image = Image.open(image_path).convert("RGB")
+
+    detections = model.predict(
+        image,
+        threshold=conf
+    )
+
+    results = []
+
+    masks = getattr(detections, "masks", None)
+
+    if masks is None:
+        masks = getattr(detections, "mask", None)
+
+    for i, (xyxy, score, class_id) in enumerate(zip(
+        detections.xyxy,
+        detections.confidence,
+        detections.class_id
+    )):
+
+        x1, y1, x2, y2 = xyxy
+
+        det = {
+            "class": CLASS_NAMES[int(class_id)] if int(class_id) < len(CLASS_NAMES) else str(class_id),
+            "confidence": float(score),
+            "bbox": [float(x1), float(y1), float(x2), float(y2)]
+        }
+
+        if use_polygon and masks is not None and i < len(masks):
+
+            mask = masks[i].astype(np.uint8)
+
+            contours, _ = cv2.findContours(
+                mask,
+                cv2.RETR_EXTERNAL,
+                cv2.CHAIN_APPROX_SIMPLE
+            )
+
+            if contours:
+                best = max(contours, key=cv2.contourArea)
+                det["polygon"] = best.reshape(-1,2).astype(float).tolist()
+
+        results.append(det)
+
+    return results
 
 # ===================================================
 # Routes
@@ -254,6 +359,22 @@ def register_detect_routes(app):
 
         model_path, model_type = MODEL_MAP[mode]
 
+        # RF-DETR
+        if model_type == "rfdetr":
+            detections = run_rfdetr_inference(
+                model_path=model_path,
+                image_path=filepath,
+                conf=confidence,
+                use_polygon=use_polygon
+            )
+
+            return jsonify({
+                "mode": mode,
+                "useSAHI": False,
+                "usePolygon": use_polygon,
+                "detections": detections
+            })
+
         if use_sahi:
             detections = run_sahi_inference(
                 model_path=model_path,
@@ -280,7 +401,7 @@ def register_detect_routes(app):
                     ]
                 }
 
-                if use_polygon and getattr(r, "masks", None) is not None and r.masks is not None:
+                if use_polygon and getattr(r, "masks", None) is not None and len(r.masks.xy) > i:
                     if i < len(r.masks.xy) and r.masks.xy[i] is not None:
                         det["polygon"] = r.masks.xy[i].tolist()
 

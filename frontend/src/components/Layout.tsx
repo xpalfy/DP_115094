@@ -37,6 +37,8 @@ import Yolo11SegPageCombined from "../pages/yolo11/combined/Yolo11SegPageCombine
 import Yolo11PageCombined from "../pages/yolo11/combined/Yolo11PageCombined";
 import Yolo8SegPageCombined from "../pages/yolov8/combined/Yolo8SegPageCombined";
 import Yolo8PageCombined from "../pages/yolov8/combined/Yolo8PageCombined";
+import RFDetrPageCombined from "../pages/rfdetr/combined/RFDetrPageCombined";
+import RFDetrSegPageCombined from "../pages/rfdetr/combined/RFDetrSegPageCombined";
 
 import AverageImagesPage from "../pages/AverageImagesPage";
 import SampleImagesPage from "../pages/SampleImagesPage";
@@ -120,6 +122,13 @@ const Layout = () => {
         dispatch(setDetectionMode("yolo12n-french"));
         break;
 
+      case "/rfdetr-combined":
+        dispatch(setDetectionMode("rfdetr-nano-combined"));
+        break;
+      case "/rfdetr-seg-combined":
+        dispatch(setDetectionMode("rfdetr-nano-seg-combined"));
+        break;
+
       case "/ocr":
         dispatch(setDetectionMode("easyocr"));
         break;
@@ -170,6 +179,12 @@ const Layout = () => {
           <Route
             path="/yolo26-seg-combined"
             element={<Yolo26SegPageCombined />}
+          />
+
+          <Route path="/rfdetr-combined" element={<RFDetrPageCombined />} />
+          <Route
+            path="/rfdetr-seg-combined"
+            element={<RFDetrSegPageCombined />}
           />
 
           <Route path="/ocr" element={<OcrPage />} />

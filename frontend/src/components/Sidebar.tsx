@@ -16,6 +16,7 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 import { Link, useLocation } from "react-router-dom";
 import deFlag from "../assets/images/de.png";
 import frFlag from "../assets/images/fr.png";
+import combinedFlag from "../assets/images/combined.png";
 
 const drawerWidth = 240;
 
@@ -28,6 +29,7 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   const [openYolo11, setOpenYolo11] = useState(false);
   const [openYolo12, setOpenYolo12] = useState(false);
   const [openYolo26, setOpenYolo26] = useState(false);
+  const [openRFDetr, setOpenRFDetr] = useState(false);
 
   // Language-level collapsibles (YOLOv8)
   const [openY8German, setOpenY8German] = useState(false);
@@ -47,6 +49,9 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   const [openY26German, setOpenY26German] = useState(false);
   const [openY26French, setOpenY26French] = useState(false);
   const [openY26Combined, setOpenY26Combined] = useState(false);
+
+  // Language-level collapsibles (RFDetr)
+  const [openRFDetrCombined, setOpenRFDetrCombined] = useState(false);
 
   return (
     <Drawer
@@ -140,20 +145,21 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
 
             <SectionGroup
               label="Combined"
+              flag={combinedFlag}
               open={openY8Combined}
               onToggle={() => setOpenY8Combined((v) => !v)}
               level={1}
             >
               <SidebarLink
                 to="/yolo8-combined"
-                label="Combined Detection & Segmentation (YOLOv8)"
+                label="Character Detection (YOLOv8)"
                 active={active("/yolo8-combined")}
                 onClick={onClose}
                 level={2}
               />
               <SidebarLink
                 to="/yolo8-seg-combined"
-                label="Combined Segmentation (YOLOv8)"
+                label="Character Segmentation (YOLOv8)"
                 active={active("/yolo8-seg-combined")}
                 onClick={onClose}
                 level={2}
@@ -217,20 +223,21 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
 
             <SectionGroup
               label="Combined"
+              flag={combinedFlag}
               open={openY11Combined}
               onToggle={() => setOpenY11Combined((v) => !v)}
               level={1}
             >
               <SidebarLink
                 to="/yolo11-combined"
-                label="Combined Detection & Segmentation (YOLOv11)"
+                label="Character Detection (YOLOv11)"
                 active={active("/yolo11-combined")}
                 onClick={onClose}
                 level={2}
               />
               <SidebarLink
                 to="/yolo11-seg-combined"
-                label="Combined Segmentation (YOLOv11)"
+                label="Character Segmentation (YOLOv11)"
                 active={active("/yolo11-seg-combined")}
                 onClick={onClose}
                 level={2}
@@ -294,20 +301,21 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
 
             <SectionGroup
               label="Combined"
+              flag={combinedFlag}
               open={openY26Combined}
               onToggle={() => setOpenY26Combined((v) => !v)}
               level={1}
             >
               <SidebarLink
                 to="/yolo26-combined"
-                label="Combined Detection & Segmentation (YOLOv26)"
+                label="Character Detection (YOLOv26)"
                 active={active("/yolo26-combined")}
                 onClick={onClose}
                 level={2}
               />
               <SidebarLink
                 to="/yolo26-seg-combined"
-                label="Combined Segmentation (YOLOv26)"
+                label="Character Segmentation (YOLOv26)"
                 active={active("/yolo26-seg-combined")}
                 onClick={onClose}
                 level={2}
@@ -350,6 +358,38 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
                 to="/yolo12-french"
                 label="Character Detection (YOLOv12)"
                 active={active("/yolo12-french")}
+                onClick={onClose}
+                level={2}
+              />
+            </SectionGroup>
+          </List>
+        </Collapse>
+
+        {/* RFDetr Section */}
+        <ListItemButton onClick={() => setOpenRFDetr(!openRFDetr)}>
+          <ListItemText primary="RFDetr Models" />
+          {openRFDetr ? <ExpandLess /> : <ExpandMore />}
+        </ListItemButton>
+        <Collapse in={openRFDetr} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <SectionGroup
+              label="Combined"
+              flag={combinedFlag}
+              open={openRFDetrCombined}
+              onToggle={() => setOpenRFDetrCombined((v) => !v)}
+              level={1}
+            >
+              <SidebarLink
+                to="/rfdetr-combined"
+                label="Character Detection (RFDetr)"
+                active={active("/rfdetr-combined")}
+                onClick={onClose}
+                level={2}
+              />
+              <SidebarLink
+                to="/rfdetr-seg-combined"
+                label="Character Segmentation (RFDetr)"
+                active={active("/rfdetr-seg-combined")}
                 onClick={onClose}
                 level={2}
               />
@@ -410,7 +450,7 @@ const SectionGroup = ({
                 <img
                   src={flag}
                   alt={label}
-                  style={{ width: 22, height: 15, borderRadius: 2 }}
+                  style={{ width: 22, borderRadius: 2 }}
                 />
               )}
               {label}

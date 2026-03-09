@@ -1,7 +1,6 @@
 import React from "react";
 import DetectionPage from "../../DetectionPage";
-import frFlag from "../../../assets/images/fr.png";
-import deFlag from "../../../assets/images/de.png";
+import combinedFlag from "../../../assets/images/combined.png";
 
 const Yolo8SegPageCombined: React.FC = () => {
   return (
@@ -16,14 +15,9 @@ const Yolo8SegPageCombined: React.FC = () => {
       title={
         <span style={{ display: "inline-flex", alignItems: "center", gap: 20 }}>
           <img
-            src={frFlag}
-            alt="FR"
-            style={{ width: 28, height: 20, borderRadius: 3 }}
-          />
-          <img
-            src={deFlag}
-            alt="DE"
-            style={{ width: 28, height: 20, borderRadius: 3 }}
+            src={combinedFlag}
+            alt="Combined"
+            style={{ width: 30, borderRadius: 3 }}
           />
           YOLOv8 Object Segmentation
         </span>
