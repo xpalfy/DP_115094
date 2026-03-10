@@ -8,7 +8,7 @@ ALLOWED_VERSIONS = {"v4", "v5", "v6"}
 def get_dataset_dir(version: str) -> str:
     if version not in ALLOWED_VERSIONS:
         version = "v4"
-    return f"../dataset/{version}"
+    return f"./dataset/{version}"
 
 
 def register_dataset_images_routes(app):

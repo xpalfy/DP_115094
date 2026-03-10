@@ -1,22 +1,17 @@
-FROM python:3.11-slim
+FROM pytorch/pytorch:2.4.1-cuda12.1-cudnn9-runtime
 
-# Set working directory
 WORKDIR /app
 
-# Install system dependencies for MySQL connector (and future C-extensions if needed)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc libffi-dev \
+RUN apt-get update && apt-get install -y \
+    tesseract-ocr \
+    libgl1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy and install Python dependencies
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir --timeout 1000 --retries 10 -r requirements.txt
 
-# Copy application code
 COPY . .
 
-# Expose Flask port
 EXPOSE 5000
 
-# Run Flask
 CMD ["python", "app.py"]

@@ -1,6 +1,7 @@
 import os
 import uuid
 import cv2
+import torch
 import pytesseract
 import easyocr
 import numpy as np
@@ -29,7 +30,8 @@ CLASS_NAMES = [
 # OCR
 # ===================================================
 
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+# pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
 easyocr_reader = easyocr.Reader(["en"], gpu=True)
 
 # ===================================================
@@ -182,7 +184,7 @@ def get_rfdetr_model(model_path: str):
     model = model_cls(
         pretrain_weights=model_path,
         num_classes=len(CLASS_NAMES),
-        device="cuda"
+        device='cuda' if torch.cuda.is_available() else 'cpu'
     )
     model.optimize_for_inference()
 
@@ -193,7 +195,7 @@ def get_sahi_model(model_type: str, model_path: str):
     return AutoDetectionModel.from_pretrained(
         model_type=model_type,
         model_path=model_path,
-        device="cuda"
+        device='cuda' if torch.cuda.is_available() else 'cpu'
     )
 
 # ===================================================

@@ -1,0 +1,26 @@
+from ultralytics import YOLO
+
+MODEL_NAME = "yolov8s.pt"
+DATA_YAML = "data.yaml"
+IMG_SIZE = 1024
+EPOCHS = 100
+PATIENCE = 25
+BATCH = 8
+DEVICE = "cuda"
+
+if __name__ == "__main__":
+    m = YOLO(MODEL_NAME)
+
+    m.train(
+        data=DATA_YAML,
+        imgsz=IMG_SIZE,
+        epochs=EPOCHS,
+        batch=BATCH,
+        device=DEVICE,
+        patience=PATIENCE,
+        project="../runs/combined/train_yolov8s",
+        name="v1_yolov8s",
+        exist_ok=True
+    )
+
+    print("\nTraining completed. Model saved in ../runs/combined/train_yolov8s/v1_yolov8s\n")

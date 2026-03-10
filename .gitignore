@@ -2,11 +2,9 @@
 /dataset
 /DP_DAGMAR
 /frontend/node_modules
+/backend/dataset
 /backend/runs
-/backend/trains
 /backend/uploads
-/backend/average_images
 /backend/average_images_v4
 /backend/average_images_v5
 /backend/average_images_v6
-/backend/features/runs
