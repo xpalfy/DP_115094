@@ -246,6 +246,47 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
           </List>
         </Collapse>
 
+        {/* YOLOv12 Section */}
+        <ListItemButton onClick={() => setOpenYolo12(!openYolo12)}>
+          <ListItemText primary="YOLOv12 Models" />
+          {openYolo12 ? <ExpandLess /> : <ExpandMore />}
+        </ListItemButton>
+        <Collapse in={openYolo12} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <SectionGroup
+              label="German"
+              flag={deFlag}
+              open={openY12German}
+              onToggle={() => setOpenY12German((v) => !v)}
+              level={1}
+            >
+              <SidebarLink
+                to="/yolo12-german"
+                label="Character Detection (YOLOv12)"
+                active={active("/yolo12-german")}
+                onClick={onClose}
+                level={2}
+              />
+            </SectionGroup>
+
+            <SectionGroup
+              label="French"
+              flag={frFlag}
+              open={openY12French}
+              onToggle={() => setOpenY12French((v) => !v)}
+              level={1}
+            >
+              <SidebarLink
+                to="/yolo12-french"
+                label="Character Detection (YOLOv12)"
+                active={active("/yolo12-french")}
+                onClick={onClose}
+                level={2}
+              />
+            </SectionGroup>
+          </List>
+        </Collapse>
+
         {/* YOLOv26 Section */}
         <ListItemButton onClick={() => setOpenYolo26(!openYolo26)}>
           <ListItemText primary="YOLOv26 Models" />
@@ -317,47 +358,6 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
                 to="/yolo26-seg-combined"
                 label="Character Segmentation (YOLOv26)"
                 active={active("/yolo26-seg-combined")}
-                onClick={onClose}
-                level={2}
-              />
-            </SectionGroup>
-          </List>
-        </Collapse>
-
-        {/* YOLOv12 Section */}
-        <ListItemButton onClick={() => setOpenYolo12(!openYolo12)}>
-          <ListItemText primary="YOLOv12 Models" />
-          {openYolo12 ? <ExpandLess /> : <ExpandMore />}
-        </ListItemButton>
-        <Collapse in={openYolo12} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
-            <SectionGroup
-              label="German"
-              flag={deFlag}
-              open={openY12German}
-              onToggle={() => setOpenY12German((v) => !v)}
-              level={1}
-            >
-              <SidebarLink
-                to="/yolo12-german"
-                label="Character Detection (YOLOv12)"
-                active={active("/yolo12-german")}
-                onClick={onClose}
-                level={2}
-              />
-            </SectionGroup>
-
-            <SectionGroup
-              label="French"
-              flag={frFlag}
-              open={openY12French}
-              onToggle={() => setOpenY12French((v) => !v)}
-              level={1}
-            >
-              <SidebarLink
-                to="/yolo12-french"
-                label="Character Detection (YOLOv12)"
-                active={active("/yolo12-french")}
                 onClick={onClose}
                 level={2}
               />
