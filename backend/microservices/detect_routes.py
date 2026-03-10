@@ -1,4 +1,5 @@
 import os
+import uuid
 import cv2
 import pytesseract
 import easyocr
@@ -29,7 +30,7 @@ CLASS_NAMES = [
 # ===================================================
 
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-easyocr_reader = easyocr.Reader(["en"])
+easyocr_reader = easyocr.Reader(["en"], gpu=True)
 
 # ===================================================
 # MODEL MAP
@@ -178,18 +179,20 @@ def get_rfdetr_model(model_path: str):
     else:
         model_cls = RFDETRBase
 
-    return model_cls(
+    model = model_cls(
         pretrain_weights=model_path,
         num_classes=len(CLASS_NAMES),
         device="cuda"
     )
+    model.optimize_for_inference()
+
+    return model
 
 @lru_cache(maxsize=16)
-def get_sahi_model(model_type: str, model_path: str, conf: float):
+def get_sahi_model(model_type: str, model_path: str):
     return AutoDetectionModel.from_pretrained(
         model_type=model_type,
         model_path=model_path,
-        confidence_threshold=conf,
         device="cuda"
     )
 
@@ -225,9 +228,17 @@ def sahi_mask_to_polygon(det, min_area=20):
 
 
 def run_sahi_inference(model_path, image_path, model_type="yolov8", conf=0.5, use_polygon=False):
-    detection_model = get_sahi_model(model_type, model_path, conf)
+    detection_model = get_sahi_model(model_type, model_path)
+    detection_model.confidence_threshold = conf
 
-    result = get_sliced_prediction(image_path, detection_model)
+    result = get_sliced_prediction(
+        image_path,
+        detection_model,
+        slice_height=512,
+        slice_width=512,
+        overlap_height_ratio=0.2,
+        overlap_width_ratio=0.2
+    )
     detections = []
 
     for det in result.object_prediction_list:
@@ -286,8 +297,7 @@ def run_rfdetr_inference(model_path, image_path, conf=0.5, use_polygon=False):
 
         if use_polygon and masks is not None and i < len(masks):
 
-            mask = masks[i].astype(np.uint8)
-
+            mask = (masks[i] > 0).astype(np.uint8)
             contours, _ = cv2.findContours(
                 mask,
                 cv2.RETR_EXTERNAL,
@@ -320,96 +330,103 @@ def register_detect_routes(app):
         confidence = float(request.form.get("confidence", 50)) / 100.0
 
         os.makedirs("uploads", exist_ok=True)
-        filepath = os.path.join("uploads", file.filename)
+        filename = f"{uuid.uuid4()}_{file.filename}"
+        filepath = os.path.join("uploads", filename)
         file.save(filepath)
 
-        # OCR
-        if mode == "pytesseract":
-            img = cv2.imread(filepath)
-            h, _, _ = img.shape
-            detections = []
+        try:
 
-            for b in pytesseract.image_to_boxes(img).splitlines():
-                c, x1, y1, x2, y2 = b.split()[:5]
-                detections.append({
-                    "class": str(c),
-                    "confidence": 1.0,
-                    "bbox": [int(x1), int(h - int(y2)), int(x2), int(h - int(y1))]
+            # OCR
+            if mode == "pytesseract":
+                img = cv2.imread(filepath)
+                h, _, _ = img.shape
+                detections = []
+
+                for b in pytesseract.image_to_boxes(img).splitlines():
+                    c, x1, y1, x2, y2 = b.split()[:5]
+                    detections.append({
+                        "class": str(c),
+                        "confidence": 1.0,
+                        "bbox": [int(x1), int(h - int(y2)), int(x2), int(h - int(y1))]
+                    })
+                return jsonify({"mode": mode, "detections": detections})
+
+            if mode == "easyocr":
+                img = cv2.imread(filepath)
+                detections = []
+
+                for bbox, text, prob in easyocr_reader.readtext(img):
+                    xs = [float(p[0]) for p in bbox]
+                    ys = [float(p[1]) for p in bbox]
+
+                    detections.append({
+                        "class": str(text),
+                        "confidence": float(prob),
+                        "bbox": [float(min(xs)), float(min(ys)), float(max(xs)), float(max(ys))]
+                    })
+                return jsonify({"mode": mode, "detections": detections})
+
+            # YOLO / SAHI
+            if mode not in MODEL_MAP:
+                return jsonify({"error": f"Unknown mode '{mode}'"}), 400
+
+            model_path, model_type = MODEL_MAP[mode]
+
+            # RF-DETR
+            if model_type == "rfdetr":
+                detections = run_rfdetr_inference(
+                    model_path=model_path,
+                    image_path=filepath,
+                    conf=confidence,
+                    use_polygon=use_polygon
+                )
+
+                return jsonify({
+                    "mode": mode,
+                    "useSAHI": False,
+                    "usePolygon": use_polygon,
+                    "detections": detections
                 })
-            return jsonify({"mode": mode, "detections": detections})
 
-        if mode == "easyocr":
-            img = cv2.imread(filepath)
-            detections = []
+            if use_sahi:
+                detections = run_sahi_inference(
+                    model_path=model_path,
+                    image_path=filepath,
+                    model_type=model_type,
+                    conf=confidence,
+                    use_polygon=use_polygon
+                )
+            else:
+                model = get_yolo_model(model_path)
+                detections = []
+                img = cv2.imread(filepath)
+                results = model.predict(img, imgsz=1024, conf=confidence)
+                r = results[0]
 
-            for bbox, text, prob in easyocr_reader.readtext(img):
-                xs = [float(p[0]) for p in bbox]
-                ys = [float(p[1]) for p in bbox]
+                for i, box in enumerate(r.boxes):
+                    det = {
+                        "class": str(r.names[int(box.cls.item())]),
+                        "confidence": float(box.conf.item()),
+                        "bbox": [
+                            float(box.xyxy[0][0].item()),
+                            float(box.xyxy[0][1].item()),
+                            float(box.xyxy[0][2].item()),
+                            float(box.xyxy[0][3].item())
+                        ]
+                    }
 
-                detections.append({
-                    "class": str(text),
-                    "confidence": float(prob),
-                    "bbox": [float(min(xs)), float(min(ys)), float(max(xs)), float(max(ys))]
-                })
-            return jsonify({"mode": mode, "detections": detections})
+                    if use_polygon and r.masks is not None and i < len(r.masks.xy):
+                        det["polygon"] = r.masks.xy[i].tolist()
 
-        # YOLO / SAHI
-        if mode not in MODEL_MAP:
-            return jsonify({"error": f"Unknown mode '{mode}'"}), 400
-
-        model_path, model_type = MODEL_MAP[mode]
-
-        # RF-DETR
-        if model_type == "rfdetr":
-            detections = run_rfdetr_inference(
-                model_path=model_path,
-                image_path=filepath,
-                conf=confidence,
-                use_polygon=use_polygon
-            )
+                    detections.append(det)
 
             return jsonify({
                 "mode": mode,
-                "useSAHI": False,
+                "useSAHI": use_sahi,
                 "usePolygon": use_polygon,
                 "detections": detections
             })
 
-        if use_sahi:
-            detections = run_sahi_inference(
-                model_path=model_path,
-                image_path=filepath,
-                model_type=model_type,
-                conf=confidence,
-                use_polygon=use_polygon
-            )
-        else:
-            model = get_yolo_model(model_path)
-            detections = []
-            results = model.predict(filepath, imgsz=1024, conf=confidence)
-            r = results[0]
-
-            for i, box in enumerate(r.boxes):
-                det = {
-                    "class": str(r.names[int(box.cls.item())]),
-                    "confidence": float(box.conf.item()),
-                    "bbox": [
-                        float(box.xyxy[0][0].item()),
-                        float(box.xyxy[0][1].item()),
-                        float(box.xyxy[0][2].item()),
-                        float(box.xyxy[0][3].item())
-                    ]
-                }
-
-                if use_polygon and getattr(r, "masks", None) is not None and len(r.masks.xy) > i:
-                    if i < len(r.masks.xy) and r.masks.xy[i] is not None:
-                        det["polygon"] = r.masks.xy[i].tolist()
-
-                detections.append(det)
-
-        return jsonify({
-            "mode": mode,
-            "useSAHI": use_sahi,
-            "usePolygon": use_polygon,
-            "detections": detections
-        })
+        finally:
+            if os.path.exists(filepath):
+                os.remove(filepath)
