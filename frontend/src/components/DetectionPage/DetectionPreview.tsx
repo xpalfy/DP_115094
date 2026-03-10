@@ -27,6 +27,20 @@ const DetectionPreview: React.FC<DetectionPreviewProps> = ({
   loading,
 }) => {
   const [imageDims, setImageDims] = useState({ w: 1, h: 1 });
+  const classColors = React.useRef<Record<string, string>>({});
+
+  const getColor = (cls: string) => {
+    if (classColors.current[cls]) return classColors.current[cls];
+
+    const index = Object.keys(classColors.current).length;
+
+    const hue = (index * 137.508) % 360;
+    const color = `hsl(${hue}, 70%, 50%)`;
+
+    classColors.current[cls] = color;
+
+    return color;
+  };
 
   const cropFromOriginal = (det: any) => {
     if (!imgRef.current) return;
@@ -109,6 +123,9 @@ const DetectionPreview: React.FC<DetectionPreviewProps> = ({
               preserveAspectRatio="none"
             >
               {detections.map((det: any, i: number) => {
+                const label = det.class;
+                const color = getColor(label);
+
                 const hasPoly =
                   Array.isArray(det.polygon) && det.polygon.length > 2;
 
@@ -121,8 +138,9 @@ const DetectionPreview: React.FC<DetectionPreviewProps> = ({
                     <polygon
                       key={i}
                       points={points}
-                      fill="rgba(0,255,0,0.40)"
-                      stroke="#00ff66"
+                      fill={color}
+                      stroke={color}
+                      fillOpacity={0.35}
                       strokeWidth={3}
                     />
                   );
@@ -137,8 +155,9 @@ const DetectionPreview: React.FC<DetectionPreviewProps> = ({
                     y={y1}
                     width={x2 - x1}
                     height={y2 - y1}
-                    fill="rgba(255,0,0,0.40)"
-                    stroke="#ff0000"
+                    fill={color}
+                    stroke={color}
+                    fillOpacity={0.35}
                     strokeWidth={3}
                     rx={3}
                     ry={3}
