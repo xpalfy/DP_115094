@@ -236,10 +236,6 @@ def run_sahi_inference(model_path, image_path, model_type="yolov8", conf=0.5, us
     result = get_sliced_prediction(
         image_path,
         detection_model,
-        slice_height=512,
-        slice_width=512,
-        overlap_height_ratio=0.2,
-        overlap_width_ratio=0.2
     )
     detections = []
 
