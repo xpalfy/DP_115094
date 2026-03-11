@@ -1,12 +1,12 @@
-path: ../../dataset/v5.4
+path: ../dataset/v6.5
 
 train: train
 val: val
 test: test
 
-nc: 20
+nc: 21
 names:
-  ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l',
-   'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v']
+  ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l', 'm', 'n',
+   'o', 'p', 'r', 's', 't', 'u', 'v', 'w', 'z']
 
-augment: True
+augment: true
