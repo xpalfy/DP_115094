@@ -19,6 +19,7 @@ from rfdetr import (
 )
 from sahi import AutoDetectionModel
 from sahi.predict import get_sliced_prediction
+from microservices.rfdetr_sahi import RFDETRDetectionModel
 from functools import lru_cache
 
 CLASS_NAMES = [
@@ -32,7 +33,7 @@ CLASS_NAMES = [
 
 # pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
-easyocr_reader = easyocr.Reader(["en"], gpu=True)
+easyocr_reader = easyocr.Reader(["en"], gpu=torch.cuda.is_available())
 
 # ===================================================
 # MODEL MAP
@@ -192,11 +193,29 @@ def get_rfdetr_model(model_path: str):
 
 @lru_cache(maxsize=16)
 def get_sahi_model(model_type: str, model_path: str):
-    return AutoDetectionModel.from_pretrained(
-        model_type=model_type,
-        model_path=model_path,
-        device='cuda' if torch.cuda.is_available() else 'cpu'
-    )
+
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+    if model_type == "rfdetr":
+        category_mapping = {
+            str(i): name for i, name in enumerate(CLASS_NAMES)
+        }
+
+        model = RFDETRDetectionModel(
+            model_path=model_path,
+            confidence_threshold=0.5,
+            device=device,
+            category_mapping=category_mapping
+        )
+
+        return model
+
+    else:
+        return AutoDetectionModel.from_pretrained(
+            model_type=model_type,
+            model_path=model_path,
+            device=device
+        )
 
 # ===================================================
 # SAHI
@@ -371,7 +390,7 @@ def register_detect_routes(app):
             model_path, model_type = MODEL_MAP[mode]
 
             # RF-DETR
-            if model_type == "rfdetr":
+            if model_type == "rfdetr" and not use_sahi:
                 detections = run_rfdetr_inference(
                     model_path=model_path,
                     image_path=filepath,
@@ -397,8 +416,7 @@ def register_detect_routes(app):
             else:
                 model = get_yolo_model(model_path)
                 detections = []
-                img = cv2.imread(filepath)
-                results = model.predict(img, imgsz=1024, conf=confidence)
+                results = model.predict(filepath, imgsz=1024, conf=confidence)
                 r = results[0]
 
                 for i, box in enumerate(r.boxes):
