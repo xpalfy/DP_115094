@@ -9,10 +9,12 @@ import {
   MenuItem,
   CssBaseline,
 } from "@mui/material";
+
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../app/store";
 import { setDetections, clearImage } from "../features/image/imageSlice";
 import { setDetectionMode, setConfidence } from "../features/ui/uiSlice";
+
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -21,6 +23,7 @@ import DetectionPreview from "../components/DetectionPage/DetectionPreview";
 import CroppedModal from "../components/DetectionPage/CroppedModal";
 import SahiToggle from "../components/DetectionPage/SahiToggle";
 import PolygonToggle from "../components/DetectionPage/PolygonToggle";
+import LetterSelect from "../components/DetectionPage/LetterSelect";
 
 interface Props {
   type: string;
@@ -42,15 +45,18 @@ const DetectionPage: React.FC<Props> = ({
   const { preview, detections } = useSelector(
     (state: RootState) => state.image,
   );
+
   const { useSahi, usePolygon, detectionMode, confidence } = useSelector(
     (state: RootState) => state.ui,
   );
 
   const [file, setFile] = useState<File | null>(null);
-
   const [loading, setLoading] = useState(false);
   const [selectedBox, setSelectedBox] = useState<any | null>(null);
   const [croppedSrc, setCroppedSrc] = useState<string | null>(null);
+
+  // LETTER FILTER
+  const [selectedLetters, setSelectedLetters] = useState<string[]>([]);
 
   const imgRef = useRef<HTMLImageElement | null>(null);
 
@@ -74,6 +80,7 @@ const DetectionPage: React.FC<Props> = ({
 
     try {
       setLoading(true);
+
       const res = await fetch("http://localhost:5000/detect", {
         method: "POST",
         body: formData,
@@ -104,6 +111,19 @@ const DetectionPage: React.FC<Props> = ({
     }
   };
 
+  // -------- LETTER OPTIONS --------
+
+  const letterOptions = Array.from(
+    new Set(detections.map((d: any) => d.class)),
+  ).sort();
+
+  // -------- FILTERED DETECTIONS --------
+
+  const filteredDetections =
+    selectedLetters.length === 0
+      ? []
+      : detections.filter((d: any) => selectedLetters.includes(d.class));
+
   return (
     <>
       <CssBaseline />
@@ -131,17 +151,19 @@ const DetectionPage: React.FC<Props> = ({
             backdropFilter: "blur(8px)",
           }}
         >
-          {/* HEADER */}
           <Typography variant="h4" fontWeight="bold" gutterBottom>
             {title}
           </Typography>
+
           <Typography variant="body1" color="text.secondary" gutterBottom>
             Upload an image and select your detection mode below.
           </Typography>
 
           {/* DETECTION MODE */}
+
           <FormControl fullWidth sx={{ mt: 3 }}>
             <InputLabel id="mode-select-label">Detection Mode</InputLabel>
+
             <Select
               labelId="mode-select-label"
               value={detectionMode || modes[0]}
@@ -157,6 +179,7 @@ const DetectionPage: React.FC<Props> = ({
           </FormControl>
 
           {/* SAHI + POLYGON + CONFIDENCE */}
+
           {type !== "ocr" && (
             <Box
               sx={{
@@ -173,16 +196,15 @@ const DetectionPage: React.FC<Props> = ({
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "flex-start",
-                  justifyContent: "center",
                 }}
               >
                 <SahiToggle visible />
                 {polygon && <PolygonToggle visible />}
               </Box>
 
-              {/* Confidence */}
               <FormControl sx={{ minWidth: 180 }}>
                 <InputLabel>Confidence</InputLabel>
+
                 <Select
                   value={confidence}
                   label="Confidence"
@@ -200,13 +222,25 @@ const DetectionPage: React.FC<Props> = ({
             </Box>
           )}
 
+          {/* LETTER FILTER */}
+
+          {letterOptions.length > 0 && (
+            <LetterSelect
+              options={letterOptions}
+              selected={selectedLetters}
+              onChange={setSelectedLetters}
+              label="Letters"
+            />
+          )}
+
           {/* IMAGE */}
+
           {!preview ? (
             <ImageUploader onFileSelected={setFile} />
           ) : (
             <DetectionPreview
               preview={preview}
-              detections={detections}
+              detections={filteredDetections}
               imgRef={imgRef}
               onCrop={(det, cropped) => {
                 setSelectedBox(det);
@@ -220,7 +254,6 @@ const DetectionPage: React.FC<Props> = ({
         </Paper>
       </Box>
 
-      {/* CROPPED MODAL */}
       <CroppedModal
         open={!!selectedBox}
         box={selectedBox}
