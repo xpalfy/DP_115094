@@ -1,3 +1,4 @@
+import cv2
 import numpy as np
 from PIL import Image
 
@@ -56,21 +57,40 @@ class RFDETRDetectionModel(DetectionModel):
             threshold=float(self.confidence_threshold)
         )
 
-
     def convert_original_predictions(self, shift_amount=[0, 0], full_shape=None):
 
         preds = self._original_predictions
-
         object_prediction_list = []
 
-        for xyxy, score, class_id in zip(
-            preds.xyxy,
-            preds.confidence,
-            preds.class_id
-        ):
+        masks = getattr(preds, "masks", None)
+
+        if masks is None:
+            masks = getattr(preds, "mask", None)
+
+        for i, (xyxy, score, class_id) in enumerate(zip(
+                preds.xyxy,
+                preds.confidence,
+                preds.class_id
+        )):
 
             x1, y1, x2, y2 = xyxy
             cid = int(class_id)
+
+            segmentation = None
+
+            if masks is not None and i < len(masks):
+
+                mask = (masks[i] > 0).astype(np.uint8)
+
+                contours, _ = cv2.findContours(
+                    mask,
+                    cv2.RETR_EXTERNAL,
+                    cv2.CHAIN_APPROX_SIMPLE
+                )
+
+                if contours:
+                    best = max(contours, key=cv2.contourArea)
+                    segmentation = [best.reshape(-1).astype(float).tolist()]
 
             object_prediction_list.append(
 
@@ -79,6 +99,7 @@ class RFDETRDetectionModel(DetectionModel):
                     category_id=cid,
                     category_name=self.category_mapping.get(str(cid), str(cid)),
                     score=float(score),
+                    segmentation=segmentation,
                     shift_amount=shift_amount,
                     full_shape=full_shape
                 )

@@ -63,6 +63,7 @@ const DetectionPage: React.FC<Props> = ({
   const handleRemove = () => {
     setFile(null);
     dispatch(clearImage());
+    setSelectedLetters([]);
   };
 
   const handleDetect = async () => {
@@ -93,16 +94,26 @@ const DetectionPage: React.FC<Props> = ({
         return;
       }
 
-      dispatch(setDetections(data.detections || []));
+      const newDetections = data.detections || [];
 
-      if (data.detections?.length) {
+      dispatch(setDetections(newDetections));
+
+      // 🔹 Betűk generálása és automatikus kiválasztása
+      const letters = Array.from(
+        new Set<string>(newDetections.map((d: any) => d.class)),
+      ).sort();
+
+      setSelectedLetters(letters);
+
+      if (newDetections.length) {
         toast.success(
-          `Found ${data.detections.length} detections ${
+          `Found ${newDetections.length} detections ${
             useSahi ? "(SAHI enabled)" : ""
           }`,
         );
       } else {
         toast.warn("No detections found.");
+        setSelectedLetters([]);
       }
     } catch {
       toast.error("Detection failed.");
@@ -114,14 +125,14 @@ const DetectionPage: React.FC<Props> = ({
   // -------- LETTER OPTIONS --------
 
   const letterOptions = Array.from(
-    new Set(detections.map((d: any) => d.class)),
+    new Set<string>(detections.map((d: any) => d.class)),
   ).sort();
 
   // -------- FILTERED DETECTIONS --------
 
   const filteredDetections =
     selectedLetters.length === 0
-      ? []
+      ? detections
       : detections.filter((d: any) => selectedLetters.includes(d.class));
 
   return (
