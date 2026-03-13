@@ -14,7 +14,7 @@ const Yolo12PageGerman: React.FC = () => {
       ]}
       title={
         <span style={{ display: "inline-flex", alignItems: "center", gap: 20 }}>
-          <img src={deFlag} alt="DE" style={{ width: 28, borderRadius: 3 }} />
+          <img src={deFlag} alt="DE" style={{ width: 30, borderRadius: 3 }} />
           YOLOv12 Object Detection
         </span>
       }

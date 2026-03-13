@@ -18,7 +18,7 @@ const RFDetrPageCombined: React.FC = () => {
           <img
             src={combinedFlag}
             alt="Combined"
-            style={{ width: 28, borderRadius: 3 }}
+            style={{ width: 30, borderRadius: 3 }}
           />
           RFDetr Object Detection
         </span>

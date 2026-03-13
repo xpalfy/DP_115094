@@ -17,7 +17,7 @@ const Yolo26PageCombined: React.FC = () => {
           <img
             src={combinedFlag}
             alt="Combined"
-            style={{ width: 28, borderRadius: 3 }}
+            style={{ width: 30, borderRadius: 3 }}
           />
           YOLOv26 Object Detection
         </span>

@@ -14,6 +14,7 @@ import {
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import OcrPage from "../pages/OcrPage";
+import HomePage from "../pages/HomePage";
 
 import Yolo12PageGerman from "../pages/yolo12/german/Yolo12PageGerman";
 import Yolo26SegPageGerman from "../pages/yolo26/german/Yolo26SegPageGerman";
@@ -148,7 +149,7 @@ const Layout = () => {
       <Sidebar open={open} onClose={handleDrawerClose} />
       <Box component="main">
         <Routes>
-          <Route path="/" element={<Yolo8PageGerman />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/yolo8-german" element={<Yolo8PageGerman />} />
           <Route path="/yolo8-seg-german" element={<Yolo8SegPageGerman />} />
           <Route path="/yolo11-german" element={<Yolo11PageGerman />} />

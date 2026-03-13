@@ -17,7 +17,7 @@ const Yolo11SegPageCombined: React.FC = () => {
           <img
             src={combinedFlag}
             alt="Combined"
-            style={{ width: 28, height: 20, borderRadius: 3 }}
+            style={{ width: 30, borderRadius: 3 }}
           />
           YOLOv11 Object Segmentation
         </span>

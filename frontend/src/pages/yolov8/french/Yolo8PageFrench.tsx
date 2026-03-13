@@ -14,7 +14,7 @@ const Yolo8PageFrench: React.FC = () => {
       ]}
       title={
         <span style={{ display: "inline-flex", alignItems: "center", gap: 20 }}>
-          <img src={frFlag} alt="FR" style={{ width: 28, borderRadius: 3 }} />
+          <img src={frFlag} alt="FR" style={{ width: 30, borderRadius: 3 }} />
           YOLOv8 Object Detection
         </span>
       }

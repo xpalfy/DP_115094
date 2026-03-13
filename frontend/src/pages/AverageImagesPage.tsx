@@ -109,7 +109,8 @@ const AverageImagesPage: React.FC = () => {
           alignItems: "center",
           justifyContent: "center",
           p: 6,
-          background: "linear-gradient(135deg, #11998e, #38ef7d)",
+          background:
+            "linear-gradient(135deg, #11998e 0%, #43cea2 50%, #38ef7d 100%)",
         }}
       >
         <Paper
