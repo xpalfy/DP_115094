@@ -2,6 +2,7 @@
 /dataset
 /DP_DAGMAR
 /frontend/node_modules
+/features/runs
 /backend/dataset
 /backend/runs
 /backend/uploads
