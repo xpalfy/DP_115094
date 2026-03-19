@@ -109,9 +109,9 @@ const StatisticsPage: React.FC = () => {
         });
     };
 
-    loadCSV("/data/v4_data.csv", setV4);
-    loadCSV("/data/v5_data.csv", setV5);
-    loadCSV("/data/v6_data.csv", setV6);
+    loadCSV("/data/v4.4_data.csv", setV4);
+    loadCSV("/data/v5.4_data.csv", setV5);
+    loadCSV("/data/v6.4_data.csv", setV6);
   }, []);
 
   const formatNumber = (num: number) => {
