@@ -98,7 +98,6 @@ const DetectionPage: React.FC<Props> = ({
 
       dispatch(setDetections(newDetections));
 
-      // 🔹 Betűk generálása és automatikus kiválasztása
       const letters = Array.from(
         new Set<string>(newDetections.map((d: any) => d.class)),
       ).sort();
@@ -123,16 +122,14 @@ const DetectionPage: React.FC<Props> = ({
   };
 
   // -------- LETTER OPTIONS --------
-
   const letterOptions = Array.from(
     new Set<string>(detections.map((d: any) => d.class)),
   ).sort();
 
   // -------- FILTERED DETECTIONS --------
-
   const filteredDetections =
     selectedLetters.length === 0
-      ? detections
+      ? []
       : detections.filter((d: any) => selectedLetters.includes(d.class));
 
   return (

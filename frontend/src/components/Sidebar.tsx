@@ -44,6 +44,7 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   // Language-level collapsibles (YOLOv12)
   const [openY12German, setOpenY12German] = useState(false);
   const [openY12French, setOpenY12French] = useState(false);
+  const [openY12Combined, setOpenY12Combined] = useState(false);
 
   // Language-level collapsibles (YOLOv26)
   const [openY26German, setOpenY26German] = useState(false);
@@ -280,6 +281,22 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
                 to="/yolo12-french"
                 label="Character Detection (YOLOv12)"
                 active={active("/yolo12-french")}
+                onClick={onClose}
+                level={2}
+              />
+            </SectionGroup>
+
+            <SectionGroup
+              label="Combined"
+              flag={combinedFlag}
+              open={openY12Combined}
+              onToggle={() => setOpenY12Combined((v) => !v)}
+              level={1}
+            >
+              <SidebarLink
+                to="/yolo12-combined"
+                label="Character Detection (YOLOv12)"
+                active={active("/yolo12-combined")}
                 onClick={onClose}
                 level={2}
               />

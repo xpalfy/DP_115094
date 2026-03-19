@@ -22,7 +22,6 @@ const LetterSelect: React.FC<Props> = ({
   label = "Letters",
 }) => {
   const [open, setOpen] = useState(false);
-  const initializedRef = useRef(false);
 
   const normalizedOptions = useMemo(
     () => Array.from(new Set(options)).filter(Boolean).sort(),
@@ -34,19 +33,6 @@ const LetterSelect: React.FC<Props> = ({
     normalizedOptions.every((letter) => selected.includes(letter));
 
   useEffect(() => {
-    if (normalizedOptions.length === 0) {
-      initializedRef.current = false;
-      return;
-    }
-
-    // Csak egyszer inicializáljuk úgy, hogy minden ki legyen jelölve
-    if (!initializedRef.current) {
-      onChange(normalizedOptions);
-      initializedRef.current = true;
-      return;
-    }
-
-    // Ha az options lista változik, tisztítsuk a már nem létező elemeket
     const filteredSelected = selected.filter((letter) =>
       normalizedOptions.includes(letter),
     );
@@ -54,7 +40,7 @@ const LetterSelect: React.FC<Props> = ({
     if (filteredSelected.length !== selected.length) {
       onChange(filteredSelected);
     }
-  }, [normalizedOptions, onChange, selected]);
+  }, [normalizedOptions, selected, onChange]);
 
   const handleToggle = (letter: string) => {
     if (letter === "ALL") {

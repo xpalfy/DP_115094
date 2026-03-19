@@ -143,6 +143,11 @@ MODEL_MAP = {
     "yolo26m-seg-combined": ("runs/combined/yolo26/segment/train_yolo26m-seg/v1_yolo26m-seg/weights/best.pt", "yolov8"),
     "yolo26l-seg-combined": ("runs/combined/yolo26/segment/train_yolo26l-seg/v1_yolo26l-seg/weights/best.pt", "yolov8"),
 
+    "yolo12n-combined": ("runs/combined/yolo12/detect/train_yolo12n/v1_yolo12n/weights/best.pt", "yolov8"),
+    "yolo12s-combined": ("runs/combined/yolo12/detect/train_yolo12s/v1_yolo12s/weights/best.pt", "yolov8"),
+    "yolo12m-combined": ("runs/combined/yolo12/detect/train_yolo12m/v1_yolo12m/weights/best.pt", "yolov8"),
+    "yolo12l-combined": ("runs/combined/yolo12/detect/train_yolo12l/v1_yolo12l/weights/best.pt", "yolov8"),
+
     "rfdetr-nano-combined": ("runs/combined/rfdetr/detect/train_rf-detr-nano/checkpoint_best_total.pth", "rfdetr"),
     "rfdetr-small-combined": ("runs/combined/rfdetr/detect/train_rf-detr-small/checkpoint_best_total.pth", "rfdetr"),
     "rfdetr-base-combined": ("runs/combined/rfdetr/detect/train_rf-detr-base/checkpoint_best_total.pth", "rfdetr"),

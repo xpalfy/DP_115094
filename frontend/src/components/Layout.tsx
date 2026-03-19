@@ -38,6 +38,7 @@ import Yolo11SegPageCombined from "../pages/yolo11/combined/Yolo11SegPageCombine
 import Yolo11PageCombined from "../pages/yolo11/combined/Yolo11PageCombined";
 import Yolo8SegPageCombined from "../pages/yolov8/combined/Yolo8SegPageCombined";
 import Yolo8PageCombined from "../pages/yolov8/combined/Yolo8PageCombined";
+import Yolo12PageCombined from "../pages/yolo12/combined/Yolo12PageCombined";
 import RFDetrPageCombined from "../pages/rfdetr/combined/RFDetrPageCombined";
 import RFDetrSegPageCombined from "../pages/rfdetr/combined/RFDetrSegPageCombined";
 
@@ -122,6 +123,9 @@ const Layout = () => {
       case "/yolo12-french":
         dispatch(setDetectionMode("yolo12n-french"));
         break;
+      case "/yolo12-combined":
+        dispatch(setDetectionMode("yolo12n-combined"));
+        break;
 
       case "/rfdetr-combined":
         dispatch(setDetectionMode("rfdetr-nano-combined"));
@@ -181,7 +185,7 @@ const Layout = () => {
             path="/yolo26-seg-combined"
             element={<Yolo26SegPageCombined />}
           />
-
+          <Route path="/yolo12-combined" element={<Yolo12PageCombined />} />
           <Route path="/rfdetr-combined" element={<RFDetrPageCombined />} />
           <Route
             path="/rfdetr-seg-combined"
