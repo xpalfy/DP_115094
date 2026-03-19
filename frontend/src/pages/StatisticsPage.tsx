@@ -13,6 +13,8 @@ import {
   Tooltip,
   Select,
   MenuItem,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import Papa from "papaparse";
 
@@ -364,18 +366,37 @@ const StatisticsPage: React.FC = () => {
             <Typography variant="h5" mb={2}>
               Class Instance Count
             </Typography>
-
             <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
-              <Select
-                value={barVersion}
-                onChange={(e) => setBarVersion(e.target.value)}
-              >
-                <MenuItem value="v4">v4.4</MenuItem>
-                <MenuItem value="v5">v5.4</MenuItem>
-                <MenuItem value="v6">v6.4</MenuItem>
-              </Select>
+              <FormControl sx={{ minWidth: 160 }}>
+                <InputLabel id="bar-version-select-label">
+                  Dataset version
+                </InputLabel>
+                <Select
+                  labelId="bar-version-select-label"
+                  value={barVersion}
+                  label="Dataset version"
+                  onChange={(e) => setBarVersion(e.target.value)}
+                  sx={{
+                    minWidth: 160,
+                    textAlign: "center",
+                    "& .MuiSelect-select": {
+                      display: "flex",
+                      justifyContent: "center",
+                    },
+                  }}
+                >
+                  <MenuItem value="v4" sx={{ justifyContent: "center" }}>
+                    v4.4
+                  </MenuItem>
+                  <MenuItem value="v5" sx={{ justifyContent: "center" }}>
+                    v5.4
+                  </MenuItem>
+                  <MenuItem value="v6" sx={{ justifyContent: "center" }}>
+                    v6.4
+                  </MenuItem>
+                </Select>
+              </FormControl>
             </Box>
-
             <ResponsiveContainer width="100%" height={400}>
               <BarChart data={barData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -395,18 +416,39 @@ const StatisticsPage: React.FC = () => {
             <Typography variant="h5" mb={2}>
               Normalized Distribution Comparison ( Train / Val / Test )
             </Typography>
-
             <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
-              <Select
-                value={lineVersion}
-                onChange={(e) => setLineVersion(e.target.value)}
-              >
-                <MenuItem value="v4">v4.4</MenuItem>
-                <MenuItem value="v5">v5.4</MenuItem>
-                <MenuItem value="v6">v6.4</MenuItem>
-              </Select>
+              <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+                <FormControl sx={{ minWidth: 160 }}>
+                  <InputLabel id="line-version-select-label">
+                    Dataset version
+                  </InputLabel>
+                  <Select
+                    labelId="line-version-select-label"
+                    value={lineVersion}
+                    label="Dataset version"
+                    onChange={(e) => setLineVersion(e.target.value)}
+                    sx={{
+                      minWidth: 160,
+                      textAlign: "center",
+                      "& .MuiSelect-select": {
+                        display: "flex",
+                        justifyContent: "center",
+                      },
+                    }}
+                  >
+                    <MenuItem value="v4" sx={{ justifyContent: "center" }}>
+                      v4.4
+                    </MenuItem>
+                    <MenuItem value="v5" sx={{ justifyContent: "center" }}>
+                      v5.4
+                    </MenuItem>
+                    <MenuItem value="v6" sx={{ justifyContent: "center" }}>
+                      v6.4
+                    </MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
             </Box>
-
             <ResponsiveContainer width="100%" height={400}>
               <LineChart data={normalizedLineData}>
                 <CartesianGrid strokeDasharray="3 3" />
