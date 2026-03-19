@@ -1,0 +1,12 @@
+﻿dataset,version,type,images,classes,total_instances,avg_per_image,avg_per_class,min_instances,max_instances
+German,v4,original,26,29,9644,370.92,332.55,9,1554
+French,v5,original,15,26,9820,654.67,377.69,12,1707
+Combined,v6,original,40,25,19225,480.62,769,47,3261
+
+German,v4.1,cleaned,26,20,9379,360.73,468.95,98,1554
+French,v5.1,cleaned,15,20,9670,644.67,483.5,101,1707
+Combined,v6.1,cleaned,40,21,18993,474.82,904.43,171,3261
+
+German,v4.4,extended,194,20,17825,91.88,891.25,191,3031
+French,v5.4,extended,150,20,18709,124.73,935.45,176,3347
+Combined,v6.4,extended,344,21,36418,105.87,1734.19,318,6378

@@ -44,6 +44,7 @@ import RFDetrSegPageCombined from "../pages/rfdetr/combined/RFDetrSegPageCombine
 
 import AverageImagesPage from "../pages/AverageImagesPage";
 import SampleImagesPage from "../pages/SampleImagesPage";
+import StatisticsPage from "../pages/StatisticsPage";
 
 const Layout = () => {
   const location = useLocation();
@@ -195,6 +196,7 @@ const Layout = () => {
           <Route path="/ocr" element={<OcrPage />} />
           <Route path="/average" element={<AverageImagesPage />} />
           <Route path="/sample-images" element={<SampleImagesPage />} />
+          <Route path="/statistics" element={<StatisticsPage />} />
         </Routes>
       </Box>
     </>

@@ -19,8 +19,9 @@ const Header = () => {
   const handleDrawerToggle = () => dispatch(toggleSidebar());
 
   const navItems = [
-    { label: "Average Images", path: "/average" },
-    { label: "Sample Images", path: "/sample-images" },
+    { label: "Average Character Images", path: "/average" },
+    { label: "Annotation Examples", path: "/sample-images" },
+    { label: "Dataset Statistics", path: "/statistics" },
   ];
 
   return (
