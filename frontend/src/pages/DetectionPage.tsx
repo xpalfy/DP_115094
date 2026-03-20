@@ -226,7 +226,7 @@ const DetectionPage: React.FC<Props> = ({
             </Box>
           )}
 
-          {letterOptions.length > 0 && (
+          {letterOptions.length > 0 && type !== "ocr" && (
             <LetterSelect
               options={letterOptions}
               selected={selectedLetters}
