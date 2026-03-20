@@ -10,7 +10,7 @@ from PIL import Image
 # CONFIG
 # ===================================================
 
-DATA_YAML = "../../dataset/v7.5/data.yaml"
+DATA_YAML = "../../dataset/v6.5/data.yaml"
 OUTPUT_SUFFIX = "_coco"
 
 

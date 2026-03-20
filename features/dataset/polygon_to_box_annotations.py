@@ -6,8 +6,8 @@ import shutil
 # CONFIG
 # ===================================================
 
-SOURCE_DIR = "../../dataset/v7.4"
-TARGET_DIR = "../../dataset/v7.5"
+SOURCE_DIR = "../../dataset/v6.4"
+TARGET_DIR = "../../dataset/v6.5"
 
 COPY_IMAGES = True
 

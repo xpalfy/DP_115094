@@ -8,8 +8,8 @@ import yaml
 # CONFIG
 # ===================================================
 
-SRC_DATA_YAML = Path("../../dataset/v7/data.yaml")
-DST_ROOT = Path("../../dataset/v7.1")
+SRC_DATA_YAML = Path("../../dataset/v6/data.yaml")
+DST_ROOT = Path("../../dataset/v6.1")
 
 MIN_COUNT = 100
 

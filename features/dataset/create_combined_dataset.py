@@ -12,7 +12,7 @@ BASE_PATH = "../../dataset"
 V4_PATH = os.path.join(BASE_PATH, "v4")
 V5_PATH = os.path.join(BASE_PATH, "v5")
 
-OUTPUT_PATH = os.path.join(BASE_PATH, "v7")
+OUTPUT_PATH = os.path.join(BASE_PATH, "v6")
 
 IMAGE_EXTS = [".jpg", ".jpeg", ".png", ".bmp"]
 
@@ -154,7 +154,7 @@ def main():
     with open(os.path.join(OUTPUT_PATH, "data.yaml"), "w") as f:
         yaml.dump(out_yaml, f, sort_keys=False)
 
-    print("\nv7 dataset successfully created.")
+    print("\nv6 dataset successfully created.")
 
 
 if __name__ == "__main__":

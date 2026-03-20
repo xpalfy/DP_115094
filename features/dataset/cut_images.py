@@ -7,8 +7,8 @@ import numpy as np
 # CONFIG
 # ===================================================
 
-INPUT_DATASET = "../../dataset/v7.1"
-OUTPUT_DATASET = "../../dataset/v7.2"
+INPUT_DATASET = "../../dataset/v6.1"
+OUTPUT_DATASET = "../../dataset/v6.2"
 
 IMAGES_DIR = os.path.join(INPUT_DATASET, "images")
 LABELS_DIR = os.path.join(INPUT_DATASET, "labels")
@@ -166,7 +166,7 @@ def main():
         if image_file.lower().endswith((".jpg", ".jpeg", ".png")):
             process_image(image_file)
 
-    print("Done: v7.1 -> v7.2 slicing completed. Only annotated tiles were saved.")
+    print("Done: v6.1 -> v6.2 slicing completed. Only annotated tiles were saved.")
 
 
 if __name__ == "__main__":

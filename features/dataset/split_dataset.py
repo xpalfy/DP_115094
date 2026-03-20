@@ -7,8 +7,8 @@ import random
 # CONFIG
 # ===================================================
 
-INPUT_DATASET = "../../dataset/v7.2"
-OUTPUT_DATASET = "../../dataset/v7.4"
+INPUT_DATASET = "../../dataset/v6.2"
+OUTPUT_DATASET = "../../dataset/v6.4"
 
 IMAGES_DIR = os.path.join(INPUT_DATASET, "images")
 LABELS_DIR = os.path.join(INPUT_DATASET, "labels")
