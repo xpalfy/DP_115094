@@ -40,7 +40,6 @@ const Header = () => {
           py: 1,
         }}
       >
-        {/* LEFT SIDE: Menu + Title */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <IconButton
             edge="start"
@@ -68,7 +67,6 @@ const Header = () => {
           </Typography>
         </Box>
 
-        {/* RIGHT SIDE: Navigation Buttons */}
         <Stack
           direction="row"
           spacing={1.5}

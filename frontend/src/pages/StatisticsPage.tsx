@@ -15,9 +15,10 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Button,
 } from "@mui/material";
 import Papa from "papaparse";
-
+import DownloadIcon from "@mui/icons-material/Download";
 import {
   BarChart,
   Bar,
@@ -82,8 +83,13 @@ const StatisticsPage: React.FC = () => {
   const [v5, setV5] = useState<ClassRow[]>([]);
   const [v6, setV6] = useState<ClassRow[]>([]);
 
-  const [barVersion, setBarVersion] = useState("v6");
-  const [lineVersion, setLineVersion] = useState("v6");
+  const [barDatasets, setBarDatasets] = useState<{ [key: string]: ClassRow[] }>(
+    {},
+  );
+
+  const [barGroup, setBarGroup] = useState("v6");
+  const [barVariant, setBarVariant] = useState("v6");
+  const [lineVersion, setLineVersion] = useState("v6.4");
 
   useEffect(() => {
     fetch("/data/stats.csv")
@@ -114,6 +120,27 @@ const StatisticsPage: React.FC = () => {
     loadCSV("/data/v4.4_data.csv", setV4);
     loadCSV("/data/v5.4_data.csv", setV5);
     loadCSV("/data/v6.4_data.csv", setV6);
+
+    const barFiles = [
+      "v4_data.csv",
+      "v4.1_data.csv",
+      "v4.4_data.csv",
+      "v5_data.csv",
+      "v5.1_data.csv",
+      "v5.4_data.csv",
+      "v6_data.csv",
+      "v6.1_data.csv",
+      "v6.4_data.csv",
+    ];
+
+    barFiles.forEach((file) => {
+      loadCSV(`/data/${file}`, (data: ClassRow[]) => {
+        setBarDatasets((prev) => ({
+          ...prev,
+          [file.replace("_data.csv", "")]: data,
+        }));
+      });
+    });
   }, []);
 
   const formatNumber = (num: number) => {
@@ -136,12 +163,13 @@ const StatisticsPage: React.FC = () => {
   };
 
   const getDataByVersion = (version: string) => {
-    if (version === "v4") return v4;
-    if (version === "v5") return v5;
-    return v6;
+    if (version === "v4.4") return v4;
+    if (version === "v5.4") return v5;
+    if (version === "v6.4") return v6;
+    return [];
   };
 
-  const barRaw = getDataByVersion(barVersion);
+  const barRaw = barDatasets[barVariant] || [];
 
   const barData = barRaw.map((c) => ({
     class: c.class_name,
@@ -186,7 +214,6 @@ const StatisticsPage: React.FC = () => {
               Evolution of datasets across preprocessing pipeline
             </Typography>
           </Box>
-
           <Box
             sx={{
               display: "flex",
@@ -250,7 +277,6 @@ const StatisticsPage: React.FC = () => {
               </Typography>
             </Paper>
           </Box>
-
           <Paper
             elevation={20}
             sx={{
@@ -361,39 +387,56 @@ const StatisticsPage: React.FC = () => {
               </Typography>
             </Box>
           </Paper>
-
           <Paper sx={{ p: 4, mt: 4 }}>
             <Typography variant="h5" mb={2}>
               Class Instance Count
             </Typography>
-            <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 2,
+                mb: 2,
+              }}
+            >
               <FormControl sx={{ minWidth: 160 }}>
-                <InputLabel id="bar-version-select-label">
-                  Dataset version
-                </InputLabel>
+                <InputLabel>Dataset</InputLabel>
                 <Select
-                  labelId="bar-version-select-label"
-                  value={barVersion}
-                  label="Dataset version"
-                  onChange={(e) => setBarVersion(e.target.value)}
-                  sx={{
-                    minWidth: 160,
-                    textAlign: "center",
-                    "& .MuiSelect-select": {
-                      display: "flex",
-                      justifyContent: "center",
-                    },
+                  value={barGroup}
+                  label="Dataset"
+                  onChange={(e) => {
+                    const group = e.target.value;
+                    setBarGroup(group);
+
+                    const variants = Object.keys(barDatasets)
+                      .filter((k) => k.startsWith(group))
+                      .sort();
+
+                    if (variants.length > 0) {
+                      setBarVariant(variants[0]);
+                    }
                   }}
                 >
-                  <MenuItem value="v4" sx={{ justifyContent: "center" }}>
-                    v4.4
-                  </MenuItem>
-                  <MenuItem value="v5" sx={{ justifyContent: "center" }}>
-                    v5.4
-                  </MenuItem>
-                  <MenuItem value="v6" sx={{ justifyContent: "center" }}>
-                    v6.4
-                  </MenuItem>
+                  <MenuItem value="v4">v4</MenuItem>
+                  <MenuItem value="v5">v5</MenuItem>
+                  <MenuItem value="v6">v6</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl sx={{ minWidth: 160 }}>
+                <InputLabel>Version</InputLabel>
+                <Select
+                  value={barVariant}
+                  label="Version"
+                  onChange={(e) => setBarVariant(e.target.value)}
+                >
+                  {Object.keys(barDatasets)
+                    .filter((key) => key.startsWith(barGroup))
+                    .sort()
+                    .map((key) => (
+                      <MenuItem key={key} value={key}>
+                        {key}
+                      </MenuItem>
+                    ))}
                 </Select>
               </FormControl>
             </Box>
@@ -411,7 +454,6 @@ const StatisticsPage: React.FC = () => {
               </BarChart>
             </ResponsiveContainer>
           </Paper>
-
           <Paper sx={{ p: 4, mt: 4 }}>
             <Typography variant="h5" mb={2}>
               Normalized Distribution Comparison ( Train / Val / Test )
@@ -436,13 +478,13 @@ const StatisticsPage: React.FC = () => {
                       },
                     }}
                   >
-                    <MenuItem value="v4" sx={{ justifyContent: "center" }}>
+                    <MenuItem value="v4.4" sx={{ justifyContent: "center" }}>
                       v4.4
                     </MenuItem>
-                    <MenuItem value="v5" sx={{ justifyContent: "center" }}>
+                    <MenuItem value="v5.4" sx={{ justifyContent: "center" }}>
                       v5.4
                     </MenuItem>
-                    <MenuItem value="v6" sx={{ justifyContent: "center" }}>
+                    <MenuItem value="v6.4" sx={{ justifyContent: "center" }}>
                       v6.4
                     </MenuItem>
                   </Select>
@@ -476,6 +518,60 @@ const StatisticsPage: React.FC = () => {
                 />
               </LineChart>
             </ResponsiveContainer>
+          </Paper>
+          <Paper
+            elevation={10}
+            sx={{
+              p: 4,
+              mt: 4,
+              borderRadius: 5,
+              background: "rgba(255,255,255,0.97)",
+            }}
+          >
+            <Typography variant="h5" fontWeight="bold" mb={1}>
+              Detailed Training Results
+            </Typography>
+
+            <Typography
+              variant="body2"
+              sx={{
+                opacity: 0.75,
+                maxWidth: 620,
+                mb: 3,
+                lineHeight: 1.6,
+              }}
+            >
+              Detailed training and evaluation results are available for further
+              analysis. The provided file includes performance metrics across
+              all dataset versions, covering training, validation, and test
+              phases.
+            </Typography>
+
+            <Divider sx={{ mb: 3 }} />
+
+            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+              <Button
+                variant="contained"
+                startIcon={<DownloadIcon />}
+                href="/data/Model Tests.xlsx"
+                download
+                sx={{
+                  textTransform: "none",
+                  fontWeight: 600,
+                  px: 3.5,
+                  py: 1.2,
+                  borderRadius: 2.5,
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+                  transition: "all 0.2s ease",
+                  "&:hover": {
+                    boxShadow: "0 6px 18px rgba(0,0,0,0.18)",
+                    transform: "translateY(-1px)",
+                  },
+                }}
+              >
+                Download Model Tests.xlsx
+              </Button>
+            </Box>
           </Paper>
         </Box>
       </Box>

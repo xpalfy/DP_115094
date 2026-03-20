@@ -69,7 +69,6 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
         },
       }}
     >
-      {/* Header */}
       <Box
         sx={{
           display: "flex",
@@ -89,9 +88,7 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
 
       <Divider sx={{ borderColor: "rgba(255,255,255,0.3)" }} />
 
-      {/* Navigation */}
       <List>
-        {/* YOLOv8 Section */}
         <ListItemButton onClick={() => setOpenYolo8(!openYolo8)}>
           <ListItemText primary="YOLOv8 Models" />
           {openYolo8 ? <ExpandLess /> : <ExpandMore />}
@@ -169,7 +166,6 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
           </List>
         </Collapse>
 
-        {/* YOLOv11 Section */}
         <ListItemButton onClick={() => setOpenYolo11(!openYolo11)}>
           <ListItemText primary="YOLOv11 Models" />
           {openYolo11 ? <ExpandLess /> : <ExpandMore />}
@@ -247,7 +243,6 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
           </List>
         </Collapse>
 
-        {/* YOLOv12 Section */}
         <ListItemButton onClick={() => setOpenYolo12(!openYolo12)}>
           <ListItemText primary="YOLOv12 Models" />
           {openYolo12 ? <ExpandLess /> : <ExpandMore />}
@@ -304,7 +299,6 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
           </List>
         </Collapse>
 
-        {/* YOLOv26 Section */}
         <ListItemButton onClick={() => setOpenYolo26(!openYolo26)}>
           <ListItemText primary="YOLOv26 Models" />
           {openYolo26 ? <ExpandLess /> : <ExpandMore />}
@@ -382,7 +376,6 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
           </List>
         </Collapse>
 
-        {/* RFDetr Section */}
         <ListItemButton onClick={() => setOpenRFDetr(!openRFDetr)}>
           <ListItemText primary="RFDetr Models" />
           {openRFDetr ? <ExpandLess /> : <ExpandMore />}
@@ -414,7 +407,6 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
           </List>
         </Collapse>
 
-        {/* OCR */}
         <Divider sx={{ borderColor: "rgba(255,255,255,0.3)", my: 1 }} />
         <SidebarLink
           to="/ocr"
@@ -425,7 +417,6 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
         />
       </List>
 
-      {/* Footer */}
       <Box sx={{ flexGrow: 1 }} />
       <Divider sx={{ borderColor: "rgba(255,255,255,0.2)" }} />
       <Box sx={{ textAlign: "center", py: 2 }}>
@@ -437,7 +428,6 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   );
 };
 
-/** 2nd-level group (e.g. German/French) with optional flag */
 const SectionGroup = ({
   label,
   flag,

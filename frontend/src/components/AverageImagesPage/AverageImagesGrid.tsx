@@ -54,7 +54,7 @@ const AverageImagesGrid: React.FC<AverageImagesGridProps> = ({
       }}
     >
       {keys.map((cls) => (
-        <Tooltip key={cls} title={`Class: ${cls.toUpperCase()}`} arrow>
+        <Tooltip key={cls} title={`Class: ${cls}`} arrow>
           <Paper
             elevation={6}
             onClick={() => onSelect(cls)}
@@ -72,7 +72,7 @@ const AverageImagesGrid: React.FC<AverageImagesGridProps> = ({
             }}
           >
             <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-              {cls.toUpperCase()}
+              {cls}
             </Typography>
 
             <img

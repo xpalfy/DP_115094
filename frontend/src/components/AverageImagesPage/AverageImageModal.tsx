@@ -46,7 +46,6 @@ const AverageImageModal: React.FC<AverageImageModalProps> = ({
             overflow: "auto",
           }}
         >
-          {/* Close button */}
           <IconButton
             onClick={onClose}
             sx={{
@@ -65,7 +64,7 @@ const AverageImageModal: React.FC<AverageImageModalProps> = ({
             fontWeight="bold"
             sx={{ mt: 2, mb: 4, textAlign: "center" }}
           >
-            {selectedClass.toUpperCase()}
+            {selectedClass}
           </Typography>
 
           <Box
@@ -86,7 +85,6 @@ const AverageImageModal: React.FC<AverageImageModalProps> = ({
           />
         </Box>
 
-        {/* Navigation arrows */}
         <IconButton
           onClick={() => onNavigate("prev")}
           sx={{

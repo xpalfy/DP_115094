@@ -5,24 +5,35 @@ from flask import request, jsonify, send_from_directory
 
 ALLOWED_VERSIONS = {"v4", "v5", "v6"}
 
+
+def get_version(version: str) -> str:
+    """Return valid version or fallback to v4."""
+    return version if version in ALLOWED_VERSIONS else "v4"
+
+
 def get_dataset_dir(version: str) -> str:
-    if version not in ALLOWED_VERSIONS:
-        version = "v4"
-    return f"./dataset/{version}"
+    """Return dataset directory path."""
+    return f"./dataset/{get_version(version)}"
+
+
+def resolve_dir(base_dir: str, split: str, subfolder: str) -> str:
+    """Try split-based directory first, fallback to root-level directory."""
+    path = os.path.join(base_dir, split, subfolder)
+    if not os.path.exists(path):
+        path = os.path.join(base_dir, subfolder)
+    return path
 
 
 def register_dataset_images_routes(app):
 
     @app.route("/dataset/images/<path:filename>")
     def serve_dataset_image(filename):
+        """Serve dataset image file."""
         split = request.args.get("split", "train")
-        version = request.args.get("v", "v4")
+        version = get_version(request.args.get("v", "v4"))
 
         dataset_dir = get_dataset_dir(version)
-
-        img_dir = os.path.join(dataset_dir, split, "images")
-        if not os.path.exists(img_dir):
-            img_dir = os.path.join(dataset_dir, "images")
+        img_dir = resolve_dir(dataset_dir, split, "images")
 
         if not os.path.exists(img_dir):
             return jsonify({"error": f"Image dir not found: {img_dir}"}), 404
@@ -31,20 +42,14 @@ def register_dataset_images_routes(app):
 
     @app.route("/sample_images", methods=["GET"])
     def get_sample_images():
+        """Return random sample images with annotations."""
         num = int(request.args.get("num", 6))
         split = request.args.get("split", "train")
-        version = request.args.get("v", "v4")
+        version = get_version(request.args.get("v", "v4"))
 
         dataset_dir = get_dataset_dir(version)
-
-        img_dir = os.path.join(dataset_dir, split, "images")
-        label_dir = os.path.join(dataset_dir, split, "labels")
-
-        if not os.path.exists(img_dir):
-            img_dir = os.path.join(dataset_dir, "images")
-
-        if not os.path.exists(label_dir):
-            label_dir = os.path.join(dataset_dir, "labels")
+        img_dir = resolve_dir(dataset_dir, split, "images")
+        label_dir = resolve_dir(dataset_dir, split, "labels")
 
         if not os.path.exists(img_dir) or not os.path.exists(label_dir):
             return jsonify({
@@ -53,6 +58,7 @@ def register_dataset_images_routes(app):
                 "label_dir": label_dir
             }), 404
 
+        # Collect image files
         img_files = [
             f for f in os.listdir(img_dir)
             if f.lower().endswith((".jpg", ".jpeg", ".png"))
@@ -61,19 +67,25 @@ def register_dataset_images_routes(app):
         if not img_files:
             return jsonify({"error": "No images found"}), 404
 
-        sampled = random.sample(img_files, min(len(img_files), num))
+        sampled_files = random.sample(img_files, min(len(img_files), num))
         results = []
 
-        for file in sampled:
-            img_path = os.path.join(img_dir, file)
+        for filename in sampled_files:
+            img_path = os.path.join(img_dir, filename)
             img = cv2.imread(img_path)
+
             if img is None:
                 continue
 
             h, w, _ = img.shape
             annotations = []
 
-            label_path = os.path.join(label_dir, os.path.splitext(file)[0] + ".txt")
+            label_path = os.path.join(
+                label_dir,
+                os.path.splitext(filename)[0] + ".txt"
+            )
+
+            # Read annotation file if exists
             if os.path.exists(label_path):
                 with open(label_path) as f:
                     for line in f:
@@ -83,12 +95,14 @@ def register_dataset_images_routes(app):
 
                         coords = list(map(float, parts[1:]))
 
-                        polygon = []
-                        for i in range(0, len(coords), 2):
-                            polygon.append([
+                        # Convert normalized coords to pixel coords
+                        polygon = [
+                            [
                                 int(coords[i] * w),
                                 int(coords[i + 1] * h)
-                            ])
+                            ]
+                            for i in range(0, len(coords), 2)
+                        ]
 
                         annotations.append({
                             "class": parts[0],
@@ -96,10 +110,13 @@ def register_dataset_images_routes(app):
                         })
 
             results.append({
-                "filename": file,
+                "filename": filename,
                 "width": w,
                 "height": h,
-                "image_url": f"http://localhost:5000/dataset/images/{file}?v={version}&split={split}",
+                "image_url": (
+                    f"http://localhost:5000/dataset/images/"
+                    f"{filename}?v={version}&split={split}"
+                ),
                 "annotations": annotations
             })
 

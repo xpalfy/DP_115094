@@ -101,7 +101,6 @@ const AverageImagesPage: React.FC = () => {
       <CssBaseline />
       <ToastContainer position="top-center" autoClose={3000} />
 
-      {/* PAGE WRAPPER */}
       <Box
         sx={{
           minHeight: "calc(100vh - 65px)",
@@ -125,7 +124,6 @@ const AverageImagesPage: React.FC = () => {
             backdropFilter: "blur(8px)",
           }}
         >
-          {/* HEADER */}
           <Typography variant="h4" fontWeight="bold" gutterBottom>
             Average Character Images
           </Typography>
@@ -133,7 +131,6 @@ const AverageImagesPage: React.FC = () => {
             Visual representation of average letter shapes from your dataset.
           </Typography>
 
-          {/* VERSION SELECT */}
           <Box
             sx={{
               display: "flex",
@@ -161,7 +158,6 @@ const AverageImagesPage: React.FC = () => {
             </FormControl>
           </Box>
 
-          {/* GRID */}
           <AverageImagesGrid
             images={images}
             loading={loading}
@@ -170,7 +166,6 @@ const AverageImagesPage: React.FC = () => {
         </Paper>
       </Box>
 
-      {/* MODAL */}
       <AverageImageModal
         open={open}
         selectedClass={selectedClass}

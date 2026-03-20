@@ -19,25 +19,12 @@ from rfdetr import (
 class RFDETRDetectionModel(DetectionModel):
 
     def load_model(self):
+        """Load appropriate RF-DETR model based on model path."""
 
         path = self.model_path
-
-        if "seg-nano" in path:
-            model_cls = RFDETRSegNano
-        elif "seg-small" in path:
-            model_cls = RFDETRSegSmall
-        elif "nano" in path:
-            model_cls = RFDETRNano
-        elif "small" in path:
-            model_cls = RFDETRSmall
-        elif "medium" in path:
-            model_cls = RFDETRMedium
-        elif "large" in path:
-            model_cls = RFDETRLarge
-        else:
-            model_cls = RFDETRBase
-
         device = self.device if isinstance(self.device, str) else self.device.type
+
+        model_cls = self._select_model_class(path)
 
         self.model = model_cls(
             pretrain_weights=path,
@@ -45,10 +32,29 @@ class RFDETRDetectionModel(DetectionModel):
             device=device
         )
 
+        # Optimize model for inference
         self.model.optimize_for_inference()
 
+    def _select_model_class(self, path: str):
+        """Select correct model class from path name."""
+
+        if "seg-nano" in path:
+            return RFDETRSegNano
+        if "seg-small" in path:
+            return RFDETRSegSmall
+        if "nano" in path:
+            return RFDETRNano
+        if "small" in path:
+            return RFDETRSmall
+        if "medium" in path:
+            return RFDETRMedium
+        if "large" in path:
+            return RFDETRLarge
+
+        return RFDETRBase
 
     def perform_inference(self, image: np.ndarray):
+        """Run inference on input image."""
 
         image = Image.fromarray(image).convert("RGB")
 
@@ -58,42 +64,25 @@ class RFDETRDetectionModel(DetectionModel):
         )
 
     def convert_original_predictions(self, shift_amount=[0, 0], full_shape=None):
+        """Convert model outputs to SAHI ObjectPrediction format."""
 
         preds = self._original_predictions
         object_prediction_list = []
 
-        masks = getattr(preds, "masks", None)
+        masks = self._get_masks(preds)
 
-        if masks is None:
-            masks = getattr(preds, "mask", None)
-
-        for i, (xyxy, score, class_id) in enumerate(zip(
+        for i, (bbox, score, class_id) in enumerate(zip(
                 preds.xyxy,
                 preds.confidence,
                 preds.class_id
         )):
 
-            x1, y1, x2, y2 = xyxy
+            x1, y1, x2, y2 = bbox
             cid = int(class_id)
 
-            segmentation = None
-
-            if masks is not None and i < len(masks):
-
-                mask = (masks[i] > 0).astype(np.uint8)
-
-                contours, _ = cv2.findContours(
-                    mask,
-                    cv2.RETR_EXTERNAL,
-                    cv2.CHAIN_APPROX_SIMPLE
-                )
-
-                if contours:
-                    best = max(contours, key=cv2.contourArea)
-                    segmentation = [best.reshape(-1).astype(float).tolist()]
+            segmentation = self._extract_segmentation(masks, i)
 
             object_prediction_list.append(
-
                 ObjectPrediction(
                     bbox=[float(x1), float(y1), float(x2), float(y2)],
                     category_id=cid,
@@ -103,7 +92,35 @@ class RFDETRDetectionModel(DetectionModel):
                     shift_amount=shift_amount,
                     full_shape=full_shape
                 )
-
             )
 
         self._object_prediction_list_per_image = [object_prediction_list]
+
+    def _get_masks(self, preds):
+        """Safely extract masks from predictions."""
+        masks = getattr(preds, "masks", None)
+        if masks is None:
+            masks = getattr(preds, "mask", None)
+        return masks
+
+    def _extract_segmentation(self, masks, index):
+        """Convert mask to polygon segmentation."""
+
+        if masks is None or index >= len(masks):
+            return None
+
+        mask = (masks[index] > 0).astype(np.uint8)
+
+        contours, _ = cv2.findContours(
+            mask,
+            cv2.RETR_EXTERNAL,
+            cv2.CHAIN_APPROX_SIMPLE
+        )
+
+        if not contours:
+            return None
+
+        # Use largest contour
+        best = max(contours, key=cv2.contourArea)
+
+        return [best.reshape(-1).astype(float).tolist()]

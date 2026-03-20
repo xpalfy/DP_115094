@@ -95,7 +95,6 @@ const SampleImagesPage: React.FC = () => {
             Random samples with YOLO polygon annotations.
           </Typography>
 
-          {/* CONTROLS */}
           <Box
             sx={{
               display: "flex",
@@ -122,7 +121,6 @@ const SampleImagesPage: React.FC = () => {
                 <MenuItem value="v6">v6</MenuItem>
               </Select>
             </FormControl>
-            {/* Number selector */}
             <FormControl sx={{ minWidth: 140 }}>
               <InputLabel>Samples</InputLabel>
               <Select
@@ -137,7 +135,6 @@ const SampleImagesPage: React.FC = () => {
             </FormControl>
           </Box>
 
-          {/* GRID */}
           {loading ? (
             <Box sx={{ mt: 6, display: "flex", justifyContent: "center" }}>
               <CircularProgress color="primary" />

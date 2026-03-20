@@ -3,46 +3,73 @@ import shutil
 import yaml
 
 
-# =========================
-# Utility Functions
-# =========================
+# ===================================================
+# CONFIG
+# ===================================================
 
-def load_yaml(yaml_path):
-    """Load a YAML configuration file."""
-    with open(yaml_path, "r") as f:
+BASE_PATH = "../../dataset"
+
+V4_PATH = os.path.join(BASE_PATH, "v4")
+V5_PATH = os.path.join(BASE_PATH, "v5")
+
+OUTPUT_PATH = os.path.join(BASE_PATH, "v7")
+
+IMAGE_EXTS = [".jpg", ".jpeg", ".png", ".bmp"]
+
+
+# ===================================================
+# HELPERS
+# ===================================================
+
+def load_yaml(path):
+    """Load YAML file."""
+    with open(path, "r") as f:
         return yaml.safe_load(f)
 
 
 def create_class_mapping(old_names, common_names):
-    """
-    Create mapping: old_class_id -> new_class_id
-    Only for classes that exist in common_names.
-    """
-    mapping = {}
-    for old_id, name in enumerate(old_names):
-        if name in common_names:
-            new_id = common_names.index(name)
-            mapping[old_id] = new_id
-    return mapping
+    """Map old class IDs → new class IDs."""
+    return {
+        old_id: common_names.index(name)
+        for old_id, name in enumerate(old_names)
+        if name in common_names
+    }
 
 
-def find_image_file(images_dir, base_name):
-    """Find image file with supported extensions."""
-    for ext in [".jpg", ".jpeg", ".png", ".bmp"]:
-        candidate = os.path.join(images_dir, base_name + ext)
-        if os.path.exists(candidate):
-            return candidate
+def find_image(images_dir, base_name):
+    """Find corresponding image file."""
+    for ext in IMAGE_EXTS:
+        img_path = os.path.join(images_dir, base_name + ext)
+        if os.path.exists(img_path):
+            return img_path
     return None
 
 
-def convert_dataset(src_root, mapping, dst_root):
-    """
-    Convert one dataset:
-    - Remap class IDs
-    - Remove objects not in common classes
-    - Copy images
-    """
+def process_label_file(label_path, mapping):
+    """Convert one label file."""
+    with open(label_path, "r") as f:
+        lines = f.readlines()
 
+    new_lines = []
+
+    for line in lines:
+        parts = line.strip().split()
+        if len(parts) < 2:
+            continue
+
+        old_cls = int(parts[0])
+
+        if old_cls not in mapping:
+            continue
+
+        new_cls = mapping[old_cls]
+        new_lines.append(str(new_cls) + " " + " ".join(parts[1:]))
+
+    return new_lines
+
+
+def convert_dataset(src_root, mapping, dst_root):
+    """Convert dataset and merge into destination."""
     images_src = os.path.join(src_root, "images")
     labels_src = os.path.join(src_root, "labels")
 
@@ -57,82 +84,66 @@ def convert_dataset(src_root, mapping, dst_root):
             continue
 
         label_path = os.path.join(labels_src, label_file)
-        base_name = os.path.splitext(label_file)[0]
+        base = os.path.splitext(label_file)[0]
 
-        image_file = find_image_file(images_src, base_name)
-        if image_file is None:
+        image_path = find_image(images_src, base)
+        if image_path is None:
             continue
 
-        with open(label_path, "r") as f:
-            lines = f.readlines()
+        new_lines = process_label_file(label_path, mapping)
 
-        new_lines = []
+        # Only save if something remains
+        if not new_lines:
+            continue
 
-        for line in lines:
-            parts = line.strip().split()
-            if len(parts) < 2:
-                continue
+        shutil.copy(image_path, os.path.join(images_dst, os.path.basename(image_path)))
 
-            old_class_id = int(parts[0])
-
-            # Skip classes not in mapping
-            if old_class_id not in mapping:
-                continue
-
-            new_class_id = mapping[old_class_id]
-            new_line = str(new_class_id) + " " + " ".join(parts[1:])
-            new_lines.append(new_line)
-
-        # Only save if at least one object remains
-        if new_lines:
-            shutil.copy(image_file, os.path.join(images_dst, os.path.basename(image_file)))
-            with open(os.path.join(labels_dst, label_file), "w") as f:
-                f.write("\n".join(new_lines))
+        with open(os.path.join(labels_dst, label_file), "w") as f:
+            f.write("\n".join(new_lines))
 
 
-# =========================
-# Main Execution
-# =========================
+def get_common_classes(names1, names2):
+    """Get sorted intersection of class names."""
+    return sorted(set(names1).intersection(set(names2)))
+
+
+# ===================================================
+# MAIN
+# ===================================================
 
 def main():
 
-    base_path = "../../dataset"
-
-    v4_yaml_path = os.path.join(base_path, "v4", "data.yaml")
-    v5_yaml_path = os.path.join(base_path, "v5", "data.yaml")
-
-    v4_yaml = load_yaml(v4_yaml_path)
-    v5_yaml = load_yaml(v5_yaml_path)
+    v4_yaml = load_yaml(os.path.join(V4_PATH, "data.yaml"))
+    v5_yaml = load_yaml(os.path.join(V5_PATH, "data.yaml"))
 
     v4_names = v4_yaml["names"]
     v5_names = v5_yaml["names"]
 
-    # Compute common classes
-    common_classes = sorted(list(set(v4_names).intersection(set(v5_names))))
+    common_classes = get_common_classes(v4_names, v5_names)
 
     print("Common classes:")
     print(common_classes)
     print("Total:", len(common_classes))
 
-    # Create mappings
+    if not common_classes:
+        raise RuntimeError("No common classes found!")
+
     mapping_v4 = create_class_mapping(v4_names, common_classes)
     mapping_v5 = create_class_mapping(v5_names, common_classes)
 
-    # Prepare v6 directory
-    v6_root = os.path.join(base_path, "v6")
+    # Reset output
+    if os.path.exists(OUTPUT_PATH):
+        shutil.rmtree(OUTPUT_PATH)
 
-    if os.path.exists(v6_root):
-        shutil.rmtree(v6_root)
+    os.makedirs(OUTPUT_PATH, exist_ok=True)
 
-    os.makedirs(v6_root, exist_ok=True)
+    # Convert datasets
+    convert_dataset(V4_PATH, mapping_v4, OUTPUT_PATH)
+    convert_dataset(V5_PATH, mapping_v5, OUTPUT_PATH)
 
-    # Convert both datasets
-    convert_dataset(os.path.join(base_path, "v4"), mapping_v4, v6_root)
-    convert_dataset(os.path.join(base_path, "v5"), mapping_v5, v6_root)
-
-    # Create new YAML config
-    v6_yaml = {
-        "path": v6_root,
+    # Save new YAML
+    out_yaml = {
+        "path": OUTPUT_PATH,
         "images": "images",
         "labels": "labels",
         "nc": len(common_classes),
@@ -140,10 +151,10 @@ def main():
         "augment": True
     }
 
-    with open(os.path.join(v6_root, "v6.yaml"), "w") as f:
-        yaml.dump(v6_yaml, f, sort_keys=False)
+    with open(os.path.join(OUTPUT_PATH, "data.yaml"), "w") as f:
+        yaml.dump(out_yaml, f, sort_keys=False)
 
-    print("\n✅ v6 dataset successfully created.")
+    print("\nv7 dataset successfully created.")
 
 
 if __name__ == "__main__":

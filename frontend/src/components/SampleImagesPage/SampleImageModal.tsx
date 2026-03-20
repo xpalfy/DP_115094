@@ -81,7 +81,7 @@ const SampleImageModal: React.FC<Props> = ({
       poly.forEach(([x, y], i) =>
         i === 0
           ? ctx.moveTo(x * scaleX, y * scaleY)
-          : ctx.lineTo(x * scaleX, y * scaleY)
+          : ctx.lineTo(x * scaleX, y * scaleY),
       );
       ctx.closePath();
       ctx.stroke();
@@ -198,7 +198,6 @@ const SampleImageModal: React.FC<Props> = ({
           </Box>
         </Box>
 
-        {/* Navigation Controls */}
         <IconButton
           onClick={() => onNavigate("prev")}
           sx={{

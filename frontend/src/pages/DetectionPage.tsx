@@ -167,8 +167,6 @@ const DetectionPage: React.FC<Props> = ({
             Upload an image and select your detection mode below.
           </Typography>
 
-          {/* DETECTION MODE */}
-
           <FormControl fullWidth sx={{ mt: 3 }}>
             <InputLabel id="mode-select-label">Detection Mode</InputLabel>
 
@@ -185,8 +183,6 @@ const DetectionPage: React.FC<Props> = ({
               ))}
             </Select>
           </FormControl>
-
-          {/* SAHI + POLYGON + CONFIDENCE */}
 
           {type !== "ocr" && (
             <Box
@@ -230,8 +226,6 @@ const DetectionPage: React.FC<Props> = ({
             </Box>
           )}
 
-          {/* LETTER FILTER */}
-
           {letterOptions.length > 0 && (
             <LetterSelect
               options={letterOptions}
@@ -240,8 +234,6 @@ const DetectionPage: React.FC<Props> = ({
               label="Letters"
             />
           )}
-
-          {/* IMAGE */}
 
           {!preview ? (
             <ImageUploader onFileSelected={setFile} />

@@ -2,19 +2,29 @@ import os
 import yaml
 from flask import request, jsonify, send_from_directory
 
+# Allowed dataset versions
 ALLOWED_VERSIONS = {"v4", "v5", "v6"}
 
+
+def get_version(version: str) -> str:
+    """Return a valid version, fallback to v4 if invalid."""
+    return version if version in ALLOWED_VERSIONS else "v4"
+
+
 def get_dataset_dir(version: str) -> str:
-    if version not in ALLOWED_VERSIONS:
-        version = "v4"
+    """Get dataset directory path."""
+    version = get_version(version)
     return f"./dataset/{version}"
 
+
 def get_average_image_dir(version: str) -> str:
-    if version not in ALLOWED_VERSIONS:
-        version = "v4"
+    """Get average images directory path."""
+    version = get_version(version)
     return f"average_images_{version}"
 
+
 def load_class_names(version: str):
+    """Load class names from data.yaml."""
     dataset_dir = get_dataset_dir(version)
     yaml_path = os.path.join(dataset_dir, "data.yaml")
 
@@ -35,7 +45,8 @@ def register_average_images_routes(app):
 
     @app.route("/average_images/files/<path:filename>")
     def serve_average_image(filename):
-        version = request.args.get("v", "v4")
+        """Serve a single average image file."""
+        version = get_version(request.args.get("v", "v4"))
         avg_dir = get_average_image_dir(version)
 
         if not os.path.exists(avg_dir):
@@ -45,7 +56,8 @@ def register_average_images_routes(app):
 
     @app.route("/average_images", methods=["GET"])
     def get_average_images():
-        version = request.args.get("v", "v4")
+        """Return available average images grouped by class."""
+        version = get_version(request.args.get("v", "v4"))
         avg_dir = get_average_image_dir(version)
 
         if not os.path.exists(avg_dir):
@@ -57,10 +69,17 @@ def register_average_images_routes(app):
             return jsonify({"error": str(e)}), 500
 
         images = {}
+
+        # Check which average images exist
         for cls in class_names:
-            fname = f"average_{cls}.png"
-            if os.path.exists(os.path.join(avg_dir, fname)):
-                images[cls] = f"http://localhost:5000/average_images/files/{fname}?v={version}"
+            filename = f"average_{cls}.png"
+            file_path = os.path.join(avg_dir, filename)
+
+            if os.path.exists(file_path):
+                images[cls] = (
+                    f"http://localhost:5000/average_images/files/"
+                    f"{filename}?v={version}"
+                )
 
         return jsonify({
             "version": version,

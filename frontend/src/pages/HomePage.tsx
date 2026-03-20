@@ -18,8 +18,6 @@ const HomePage: React.FC = () => {
         }}
       >
         <Box sx={{ width: "100%", maxWidth: 1150 }}>
-          {/* HERO */}
-
           <Box
             sx={{
               textAlign: "center",
@@ -63,8 +61,6 @@ const HomePage: React.FC = () => {
             </Typography>
           </Box>
 
-          {/* MAIN PANEL */}
-
           <Paper
             elevation={18}
             sx={{
@@ -75,8 +71,6 @@ const HomePage: React.FC = () => {
               boxShadow: "0 25px 60px rgba(0,0,0,0.15)",
             }}
           >
-            {/* PROJECT + OVERVIEW */}
-
             <Box
               sx={{
                 display: "grid",
@@ -148,8 +142,6 @@ const HomePage: React.FC = () => {
 
             <Divider sx={{ my: 6 }} />
 
-            {/* RESEARCH APPROACH */}
-
             <Typography
               variant="h5"
               fontWeight="bold"
@@ -184,8 +176,6 @@ const HomePage: React.FC = () => {
 
             <Divider sx={{ my: 6 }} />
 
-            {/* MODELS */}
-
             <Typography
               variant="h5"
               fontWeight="bold"
@@ -216,8 +206,6 @@ const HomePage: React.FC = () => {
 
             <Divider sx={{ my: 6 }} />
 
-            {/* PROJECT CONTEXT */}
-
             <Typography
               variant="h5"
               fontWeight="bold"
@@ -245,8 +233,6 @@ const HomePage: React.FC = () => {
             </Typography>
 
             <Divider sx={{ my: 6 }} />
-
-            {/* WEB APP */}
 
             <Typography
               variant="h5"

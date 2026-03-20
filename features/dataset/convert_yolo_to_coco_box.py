@@ -5,14 +5,50 @@ import shutil
 from pathlib import Path
 from PIL import Image
 
-DATA_YAML = "../../dataset/v6.5/data.yaml"
+
+# ===================================================
+# CONFIG
+# ===================================================
+
+DATA_YAML = "../../dataset/v7.5/data.yaml"
 OUTPUT_SUFFIX = "_coco"
 
 
+# ===================================================
+# LOAD CONFIG
+# ===================================================
+
 def load_yaml():
+    """Load dataset YAML config."""
     with open(DATA_YAML, "r") as f:
         return yaml.safe_load(f)
 
+
+# ===================================================
+# CONVERSIONS
+# ===================================================
+
+def yolo_to_coco_bbox(parts, width, height):
+    """Convert YOLO bbox → COCO bbox."""
+    class_id = int(parts[0])
+
+    x_center = float(parts[1])
+    y_center = float(parts[2])
+    w = float(parts[3])
+    h = float(parts[4])
+
+    bbox_w = w * width
+    bbox_h = h * height
+
+    x_min = (x_center * width) - bbox_w / 2
+    y_min = (y_center * height) - bbox_h / 2
+
+    return class_id, x_min, y_min, bbox_w, bbox_h
+
+
+# ===================================================
+# SPLIT CONVERSION
+# ===================================================
 
 def convert_split(dataset_root, split_name, output_root, classes):
 
@@ -44,6 +80,9 @@ def convert_split(dataset_root, split_name, output_root, classes):
         with Image.open(src_img) as im:
             width, height = im.size
 
+        # -------------------------
+        # IMAGE ENTRY
+        # -------------------------
         images.append({
             "id": image_id,
             "file_name": img_file,
@@ -51,42 +90,39 @@ def convert_split(dataset_root, split_name, output_root, classes):
             "height": height
         })
 
+        # -------------------------
+        # LABELS
+        # -------------------------
         label_path = labels_dir / (Path(img_file).stem + ".txt")
 
         if label_path.exists():
-
             with open(label_path) as f:
-                lines = f.readlines()
+                for line in f:
+                    parts = line.strip().split()
 
-            for line in lines:
+                    if len(parts) < 5:
+                        continue
 
-                parts = line.strip().split()
+                    class_id, x_min, y_min, bw, bh = yolo_to_coco_bbox(
+                        parts, width, height
+                    )
 
-                class_id = int(parts[0])
-                x_center = float(parts[1])
-                y_center = float(parts[2])
-                w = float(parts[3])
-                h = float(parts[4])
+                    annotations.append({
+                        "id": ann_id,
+                        "image_id": image_id,
+                        "category_id": class_id,
+                        "bbox": [x_min, y_min, bw, bh],
+                        "area": bw * bh,
+                        "iscrowd": 0
+                    })
 
-                bbox_w = w * width
-                bbox_h = h * height
-
-                x_min = (x_center * width) - bbox_w / 2
-                y_min = (y_center * height) - bbox_h / 2
-
-                annotations.append({
-                    "id": ann_id,
-                    "image_id": image_id,
-                    "category_id": class_id,
-                    "bbox": [x_min, y_min, bbox_w, bbox_h],
-                    "area": bbox_w * bbox_h,
-                    "iscrowd": 0
-                })
-
-                ann_id += 1
+                    ann_id += 1
 
         image_id += 1
 
+    # -------------------------
+    # CATEGORIES
+    # -------------------------
     categories = [
         {"id": i, "name": name}
         for i, name in enumerate(classes)
@@ -104,6 +140,10 @@ def convert_split(dataset_root, split_name, output_root, classes):
     print(f"{split_name} converted ({len(images)} images)")
 
 
+# ===================================================
+# MAIN
+# ===================================================
+
 def main():
 
     cfg = load_yaml()
@@ -113,11 +153,7 @@ def main():
 
     output_root = dataset_root + OUTPUT_SUFFIX
 
-    splits = []
-
-    for key in ["train", "val", "test"]:
-        if key in cfg:
-            splits.append(cfg[key])
+    splits = [cfg[k] for k in ["train", "val", "test"] if k in cfg]
 
     for split in splits:
         convert_split(dataset_root, split, output_root, classes)
