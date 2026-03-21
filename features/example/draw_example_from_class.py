@@ -22,7 +22,6 @@ NOTES_PATH = os.path.join(BASE_DIR, "notes.json")
 # ===================================================
 
 def load_class_map(notes_path):
-    """Load class id -> name mapping from notes.json."""
     with open(notes_path, "r", encoding="utf-8") as f:
         notes = json.load(f)
 
@@ -34,7 +33,6 @@ def load_class_map(notes_path):
 # ===================================================
 
 def find_image_for_label(label_path):
-    """Find matching image (.jpg or .png) for a label file."""
     base = os.path.basename(label_path).replace(".txt", "")
 
     for ext in [".jpg", ".png"]:
@@ -46,21 +44,25 @@ def find_image_for_label(label_path):
 
 
 def get_polygon(parts):
-    """Convert YOLO polygon coords to numpy array."""
     coords = list(map(float, parts[1:]))
     return np.array(coords).reshape(-1, 2)
 
 
 def normalize_to_pixels(polygon, w, h):
-    """Convert normalized coords → pixel coords."""
     poly_px = np.zeros_like(polygon)
     poly_px[:, 0] = polygon[:, 0] * w
     poly_px[:, 1] = polygon[:, 1] * h
     return poly_px.astype(np.int32)
 
 
-def extract_object(img, polygon_px):
-    """Mask + crop object from image."""
+def polygon_to_bbox(polygon_px):
+    x_min, y_min = np.min(polygon_px, axis=0)
+    x_max, y_max = np.max(polygon_px, axis=0)
+    return int(x_min), int(y_min), int(x_max), int(y_max)
+
+
+def extract_polygon_object(img, polygon_px):
+    """Precise polygon crop (masked)."""
     h, w = img.shape[:2]
 
     mask = np.zeros((h, w), dtype=np.uint8)
@@ -68,10 +70,15 @@ def extract_object(img, polygon_px):
 
     masked = cv2.bitwise_and(img, img, mask=mask)
 
-    x_min, y_min = np.min(polygon_px, axis=0)
-    x_max, y_max = np.max(polygon_px, axis=0)
+    x_min, y_min, x_max, y_max = polygon_to_bbox(polygon_px)
 
     return masked[y_min:y_max, x_min:x_max]
+
+
+def extract_bbox_object(img, bbox):
+    """Simple bbox crop (rectangle)."""
+    x_min, y_min, x_max, y_max = bbox
+    return img[y_min:y_max, x_min:x_max]
 
 
 # ===================================================
@@ -79,7 +86,6 @@ def extract_object(img, polygon_px):
 # ===================================================
 
 def collect_examples():
-    """Collect one example per class."""
     examples = {}
 
     for label_path in glob.glob(os.path.join(LABEL_DIR, "*.txt")):
@@ -108,7 +114,6 @@ def collect_examples():
 # ===================================================
 
 def show_examples(examples, class_map):
-    """Display cropped object examples."""
     for cls_id, (img_path, polygon_norm) in examples.items():
 
         class_name = class_map.get(cls_id, "UNKNOWN")
@@ -119,13 +124,27 @@ def show_examples(examples, class_map):
         h, w = img.shape[:2]
 
         polygon_px = normalize_to_pixels(polygon_norm, w, h)
+        bbox = polygon_to_bbox(polygon_px)
 
-        crop = extract_object(img, polygon_px)
+        # ===== CROPS =====
+        poly_crop = extract_polygon_object(img, polygon_px)
+        bbox_crop = extract_bbox_object(img, bbox)
 
-        plt.figure(figsize=(4, 4))
-        plt.imshow(crop)
-        plt.title(f"Class {cls_id} - {class_name}")
+        # ===== SHOW =====
+        plt.figure(figsize=(8, 4))
+
+        # Polygon crop
+        plt.subplot(1, 2, 1)
+        plt.imshow(poly_crop)
+        plt.title("Polygon")
         plt.axis("off")
+
+        # BBox crop
+        plt.subplot(1, 2, 2)
+        plt.imshow(bbox_crop)
+        plt.title("BBox")
+        plt.axis("off")
+
         plt.show()
 
 
@@ -137,6 +156,7 @@ def main():
     CLASS_MAP = load_class_map(NOTES_PATH)
     examples = collect_examples()
     show_examples(examples, CLASS_MAP)
+
 
 if __name__ == "__main__":
     main()
