@@ -28,20 +28,32 @@ export interface SampleImage {
   annotations: Annotation[];
 }
 
+const VERSION_OPTIONS = {
+  v4: ["v4", "v4.4"],
+  v5: ["v5", "v5.4"],
+  v6: ["v6", "v6.4"],
+} as const;
+
 const SampleImagesPage: React.FC = () => {
   const [images, setImages] = useState<SampleImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
-  const [version, setVersion] = useState<"v4" | "v5" | "v6">("v4");
+  const [baseVersion, setBaseVersion] = useState<"v4" | "v5" | "v6">("v4");
+  const [variant, setVariant] = useState<
+    "v4" | "v4.4" | "v5" | "v5.4" | "v6" | "v6.4"
+  >("v4");
+  const [split, setSplit] = useState<"train" | "val" | "test">("train");
   const [numImages, setNumImages] = useState<number>(10);
+
+  const hasSplit = ["v4.4", "v5.4", "v6.4"].includes(variant);
 
   const fetchImages = async () => {
     try {
       setLoading(true);
       const res = await fetch(
-        `http://localhost:5000/sample_images?v=${version}&num=${numImages}`,
+        `http://localhost:5000/sample_images?v=${variant}&num=${numImages}&split=${split}`,
       );
       const data = await res.json();
 
@@ -58,7 +70,13 @@ const SampleImagesPage: React.FC = () => {
 
   useEffect(() => {
     fetchImages();
-  }, [version, numImages]);
+  }, [variant, numImages, hasSplit ? split : null]);
+
+  useEffect(() => {
+    if (!hasSplit) {
+      setSplit("train");
+    }
+  }, [variant]);
 
   return (
     <>
@@ -105,22 +123,62 @@ const SampleImagesPage: React.FC = () => {
               mr: 2,
             }}
           >
-            <FormControl sx={{ minWidth: 160 }}>
-              <InputLabel id="version-select-label">Dataset version</InputLabel>
+            <FormControl sx={{ minWidth: 120 }}>
+              <InputLabel>Base</InputLabel>
               <Select
-                labelId="version-select-label"
-                value={version}
-                label="Dataset version"
-                onChange={(e) =>
-                  setVersion(e.target.value as "v4" | "v5" | "v6")
-                }
-                sx={{ minWidth: 160 }}
+                value={baseVersion}
+                label="Base"
+                onChange={(e) => {
+                  const newBase = e.target.value as "v4" | "v5" | "v6";
+                  setBaseVersion(newBase);
+                  setVariant(VERSION_OPTIONS[newBase][0]); // reset variant
+                }}
               >
                 <MenuItem value="v4">v4</MenuItem>
                 <MenuItem value="v5">v5</MenuItem>
                 <MenuItem value="v6">v6</MenuItem>
               </Select>
             </FormControl>
+            <FormControl sx={{ minWidth: 140 }}>
+              <InputLabel>Version</InputLabel>
+              <Select
+                value={variant}
+                label="Version"
+                onChange={(e) =>
+                  setVariant(
+                    e.target.value as
+                      | "v4"
+                      | "v4.4"
+                      | "v5"
+                      | "v5.4"
+                      | "v6"
+                      | "v6.4",
+                  )
+                }
+              >
+                {VERSION_OPTIONS[baseVersion].map((v) => (
+                  <MenuItem key={v} value={v}>
+                    {v}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            {hasSplit && (
+              <FormControl sx={{ minWidth: 160 }}>
+                <InputLabel>Split</InputLabel>
+                <Select
+                  value={split}
+                  label="Split"
+                  onChange={(e) =>
+                    setSplit(e.target.value as "train" | "val" | "test")
+                  }
+                >
+                  <MenuItem value="train">train</MenuItem>
+                  <MenuItem value="val">val</MenuItem>
+                  <MenuItem value="test">test</MenuItem>
+                </Select>
+              </FormControl>
+            )}
             <FormControl sx={{ minWidth: 140 }}>
               <InputLabel>Samples</InputLabel>
               <Select

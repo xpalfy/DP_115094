@@ -3,7 +3,8 @@ import cv2
 import random
 from flask import request, jsonify, send_from_directory
 
-ALLOWED_VERSIONS = {"v4", "v5", "v6"}
+ALLOWED_VERSIONS = {"v4", "v5", "v6", "v4.4", "v5.4", "v6.4"}
+SPLIT_VERSIONS = {"v4.4", "v5.4", "v6.4"}
 
 
 def get_version(version: str) -> str:
@@ -18,10 +19,12 @@ def get_dataset_dir(version: str) -> str:
 
 def resolve_dir(base_dir: str, split: str, subfolder: str) -> str:
     """Try split-based directory first, fallback to root-level directory."""
-    path = os.path.join(base_dir, split, subfolder)
-    if not os.path.exists(path):
-        path = os.path.join(base_dir, subfolder)
-    return path
+    if split:
+        path = os.path.join(base_dir, split, subfolder)
+        if os.path.exists(path):
+            return path
+
+    return os.path.join(base_dir, subfolder)
 
 
 def register_dataset_images_routes(app):
@@ -29,8 +32,13 @@ def register_dataset_images_routes(app):
     @app.route("/dataset/images/<path:filename>")
     def serve_dataset_image(filename):
         """Serve dataset image file."""
-        split = request.args.get("split", "train")
         version = get_version(request.args.get("v", "v4"))
+        raw_split = request.args.get("split")
+
+        if version in SPLIT_VERSIONS:
+            split = raw_split or "train"
+        else:
+            split = None
 
         dataset_dir = get_dataset_dir(version)
         img_dir = resolve_dir(dataset_dir, split, "images")
@@ -44,8 +52,13 @@ def register_dataset_images_routes(app):
     def get_sample_images():
         """Return random sample images with annotations."""
         num = int(request.args.get("num", 6))
-        split = request.args.get("split", "train")
         version = get_version(request.args.get("v", "v4"))
+        raw_split = request.args.get("split")
+
+        if version in SPLIT_VERSIONS:
+            split = raw_split or "train"
+        else:
+            split = None
 
         dataset_dir = get_dataset_dir(version)
         img_dir = resolve_dir(dataset_dir, split, "images")
@@ -109,14 +122,16 @@ def register_dataset_images_routes(app):
                             "polygon": polygon
                         })
 
+            image_url = f"http://localhost:5000/dataset/images/{filename}?v={version}"
+
+            if split:
+                image_url += f"&split={split}"
+
             results.append({
                 "filename": filename,
                 "width": w,
                 "height": h,
-                "image_url": (
-                    f"http://localhost:5000/dataset/images/"
-                    f"{filename}?v={version}&split={split}"
-                ),
+                "image_url": image_url,
                 "annotations": annotations
             })
 
