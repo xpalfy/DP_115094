@@ -1,4 +1,5 @@
 import os
+import yaml
 from collections import defaultdict
 
 
@@ -7,9 +8,9 @@ from collections import defaultdict
 # ===================================================
 
 DATASETS = {
-    "v4": "../../dataset/v4",
-    "v5": "../../dataset/v5",
-    "v6": "../../dataset/v6"
+    "v4.2": "../../dataset/v4.2",
+    "v5.2": "../../dataset/v5.2",
+    "v6.2": "../../dataset/v6.2"
 }
 
 
@@ -27,6 +28,16 @@ def get_files(directory, extension=None):
     return files
 
 
+def load_names(dataset_path):
+    """Load class names from data.yaml."""
+    yaml_path = os.path.join(dataset_path, "data.yaml")
+
+    with open(yaml_path, "r") as f:
+        data = yaml.safe_load(f)
+
+    return data["names"]
+
+
 def count_instances(labels_path):
     """Count class instances from label files."""
     label_files = get_files(labels_path, ".txt")
@@ -41,7 +52,11 @@ def count_instances(labels_path):
         total_instances += len(lines)
 
         for line in lines:
-            class_id = int(line.split()[0])
+            parts = line.strip().split()
+            if not parts:
+                continue
+
+            class_id = int(parts[0])
             class_counts[class_id] += 1
 
     return class_counts, total_instances
@@ -62,8 +77,9 @@ def compute_stats(class_counts, total_instances, num_images):
 # ===================================================
 
 def print_stats(dataset_path, num_images, num_classes, total_instances,
-                avg_per_image, avg_per_class, class_counts):
+                avg_per_image, avg_per_class, class_counts, class_names):
     """Print dataset statistics."""
+
     print(f"\nDataset: {dataset_path}")
     print("-------------------------")
     print(f"Images: {num_images}")
@@ -73,8 +89,10 @@ def print_stats(dataset_path, num_images, num_classes, total_instances,
     print(f"Average instances per class: {avg_per_class:.2f}")
 
     print("\nInstances per class:")
+
     for cls in sorted(class_counts):
-        print(f"class {cls}: {class_counts[cls]}")
+        name = class_names[cls] if cls < len(class_names) else str(cls)
+        print(f"{name}: {class_counts[cls]}")
 
     print("\nMin class instances:", min(class_counts.values()))
     print("Max class instances:", max(class_counts.values()))
@@ -89,6 +107,8 @@ def analyze_dataset(dataset_path):
 
     labels_path = os.path.join(dataset_path, "labels")
     images_path = os.path.join(dataset_path, "images")
+
+    class_names = load_names(dataset_path)
 
     label_files = get_files(labels_path, ".txt")
     image_files = get_files(images_path)
@@ -110,7 +130,8 @@ def analyze_dataset(dataset_path):
         total_instances,
         avg_per_image,
         avg_per_class,
-        class_counts
+        class_counts,
+        class_names
     )
 
 
