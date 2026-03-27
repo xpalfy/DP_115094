@@ -131,7 +131,7 @@ const SampleImagesPage: React.FC = () => {
                 onChange={(e) => {
                   const newBase = e.target.value as "v4" | "v5" | "v6";
                   setBaseVersion(newBase);
-                  setVariant(VERSION_OPTIONS[newBase][0]); // reset variant
+                  setVariant(VERSION_OPTIONS[newBase][0]);
                 }}
               >
                 <MenuItem value="v4">v4</MenuItem>

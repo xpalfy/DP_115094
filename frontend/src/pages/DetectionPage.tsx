@@ -55,7 +55,6 @@ const DetectionPage: React.FC<Props> = ({
   const [selectedBox, setSelectedBox] = useState<any | null>(null);
   const [croppedSrc, setCroppedSrc] = useState<string | null>(null);
 
-  // LETTER FILTER
   const [selectedLetters, setSelectedLetters] = useState<string[]>([]);
 
   const imgRef = useRef<HTMLImageElement | null>(null);
@@ -121,12 +120,10 @@ const DetectionPage: React.FC<Props> = ({
     }
   };
 
-  // -------- LETTER OPTIONS --------
   const letterOptions = Array.from(
     new Set<string>(detections.map((d: any) => d.class)),
   ).sort();
 
-  // -------- FILTERED DETECTIONS --------
   const filteredDetections =
     selectedLetters.length === 0
       ? []

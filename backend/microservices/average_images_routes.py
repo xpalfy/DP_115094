@@ -3,7 +3,7 @@ import yaml
 from flask import request, jsonify, send_from_directory
 
 # Allowed dataset versions
-ALLOWED_VERSIONS = {"v4", "v5", "v6"}
+ALLOWED_VERSIONS = {"v4", "v5", "v6", "v4.1", "v5.1", "v6.1"}
 
 
 def get_version(version: str) -> str:

@@ -24,34 +24,28 @@ const Sidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   const location = useLocation();
   const active = (path: string) => location.pathname === path;
 
-  // Top-level collapsibles
   const [openYolo8, setOpenYolo8] = useState(false);
   const [openYolo11, setOpenYolo11] = useState(false);
   const [openYolo12, setOpenYolo12] = useState(false);
   const [openYolo26, setOpenYolo26] = useState(false);
   const [openRFDetr, setOpenRFDetr] = useState(false);
 
-  // Language-level collapsibles (YOLOv8)
   const [openY8German, setOpenY8German] = useState(false);
   const [openY8French, setOpenY8French] = useState(false);
   const [openY8Combined, setOpenY8Combined] = useState(false);
 
-  // Language-level collapsibles (YOLOv11)
   const [openY11German, setOpenY11German] = useState(false);
   const [openY11French, setOpenY11French] = useState(false);
   const [openY11Combined, setOpenY11Combined] = useState(false);
 
-  // Language-level collapsibles (YOLOv12)
   const [openY12German, setOpenY12German] = useState(false);
   const [openY12French, setOpenY12French] = useState(false);
   const [openY12Combined, setOpenY12Combined] = useState(false);
 
-  // Language-level collapsibles (YOLOv26)
   const [openY26German, setOpenY26German] = useState(false);
   const [openY26French, setOpenY26French] = useState(false);
   const [openY26Combined, setOpenY26Combined] = useState(false);
 
-  // Language-level collapsibles (RFDetr)
   const [openRFDetrCombined, setOpenRFDetrCombined] = useState(false);
 
   return (
@@ -476,7 +470,6 @@ const SectionGroup = ({
   );
 };
 
-// Reusable sidebar link (supports nesting via level)
 const SidebarLink = ({
   to,
   label,

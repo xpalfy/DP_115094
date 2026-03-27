@@ -15,24 +15,30 @@ import "react-toastify/dist/ReactToastify.css";
 import AverageImagesGrid from "../components/AverageImagesPage/AverageImagesGrid";
 import AverageImageModal from "../components/AverageImagesPage/AverageImageModal";
 
+const VERSION_OPTIONS = {
+  v4: ["v4", "v4.1"],
+  v5: ["v5", "v5.1"],
+  v6: ["v6", "v6.1"],
+} as const;
+
 const AverageImagesPage: React.FC = () => {
   const [images, setImages] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState<string | null>(null);
-  const [version, setVersion] = useState<"v4" | "v5" | "v6">("v4");
+  const [baseVersion, setBaseVersion] = useState<"v4" | "v5" | "v6">("v4");
+  const [variant, setVariant] = useState<
+    "v4" | "v4.1" | "v5" | "v5.1" | "v6" | "v6.1"
+  >("v4");
 
   const classKeys = Object.keys(images);
 
-  // ==============================
-  // FETCH AVERAGE IMAGES
-  // ==============================
   useEffect(() => {
     const fetchImages = async () => {
       setLoading(true);
       try {
         const res = await fetch(
-          `http://localhost:5000/average_images?v=${version}`,
+          `http://localhost:5000/average_images?v=${variant}`,
         );
         if (!res.ok) throw new Error(`Server returned ${res.status}`);
 
@@ -53,11 +59,8 @@ const AverageImagesPage: React.FC = () => {
     };
 
     fetchImages();
-  }, [version]);
+  }, [variant]);
 
-  // ==============================
-  // MODAL HANDLERS
-  // ==============================
   const handleOpen = (cls: string) => {
     setSelectedClass(cls);
     setOpen(true);
@@ -135,25 +138,52 @@ const AverageImagesPage: React.FC = () => {
             sx={{
               display: "flex",
               justifyContent: "flex-end",
+              gap: 2,
               mt: 3,
               mb: 3,
               mr: 3,
             }}
           >
-            <FormControl sx={{ minWidth: 160 }}>
-              <InputLabel id="version-select-label">Dataset version</InputLabel>
+            <FormControl sx={{ minWidth: 120 }}>
+              <InputLabel>Base</InputLabel>
               <Select
-                labelId="version-select-label"
-                value={version}
-                label="Dataset version"
-                onChange={(e) =>
-                  setVersion(e.target.value as "v4" | "v5" | "v6")
-                }
-                sx={{ minWidth: 160 }}
+                value={baseVersion}
+                label="Base"
+                onChange={(e) => {
+                  const newBase = e.target.value as "v4" | "v5" | "v6";
+                  setBaseVersion(newBase);
+                  setVariant(VERSION_OPTIONS[newBase][0]);
+                }}
               >
                 <MenuItem value="v4">v4</MenuItem>
                 <MenuItem value="v5">v5</MenuItem>
                 <MenuItem value="v6">v6</MenuItem>
+              </Select>
+            </FormControl>
+
+            {/* VERSION SELECT */}
+            <FormControl sx={{ minWidth: 160 }}>
+              <InputLabel>Version</InputLabel>
+              <Select
+                value={variant}
+                label="Version"
+                onChange={(e) =>
+                  setVariant(
+                    e.target.value as
+                      | "v4"
+                      | "v4.1"
+                      | "v5"
+                      | "v5.1"
+                      | "v6"
+                      | "v6.1",
+                  )
+                }
+              >
+                {VERSION_OPTIONS[baseVersion].map((v) => (
+                  <MenuItem key={v} value={v}>
+                    {v}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Box>
