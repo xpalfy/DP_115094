@@ -102,7 +102,6 @@ def process_image(image_file):
 
     H, W = image.shape[:2]
 
-    # Compute tile size
     tile_size = int(round(W * TILE_RATIO))
     tile_size = max(MIN_TILE, min(tile_size, W, H))
 
@@ -123,7 +122,6 @@ def process_image(image_file):
             y_end = y_start + tile_size
             x_end = x_start + tile_size
 
-            # Skip partial tiles
             if y_end > H or x_end > W:
                 continue
 
@@ -145,7 +143,6 @@ def process_image(image_file):
                 poly = normalize_polygon(poly, x_start, y_start, tile_size)
                 new_annotations.append(format_label(class_id, poly))
 
-            # Save only if something inside
             if new_annotations:
                 cropped = image[y_start:y_end, x_start:x_end]
 

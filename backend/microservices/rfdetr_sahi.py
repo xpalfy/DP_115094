@@ -32,7 +32,6 @@ class RFDETRDetectionModel(DetectionModel):
             device=device
         )
 
-        # Optimize model for inference
         self.model.optimize_for_inference()
 
     def _select_model_class(self, path: str):
@@ -120,7 +119,6 @@ class RFDETRDetectionModel(DetectionModel):
         if not contours:
             return None
 
-        # Use largest contour
         best = max(contours, key=cv2.contourArea)
 
         return [best.reshape(-1).astype(float).tolist()]

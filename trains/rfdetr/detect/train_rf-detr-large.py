@@ -5,9 +5,7 @@ IMG_SIZE = 1024
 EPOCHS = 500
 PATIENCE = 100
 BATCH = 4
-WORKERS = 8
 DEVICE = "cuda"
-AMP = True
 
 if __name__ == "__main__":
     m = RFDETRLarge()
@@ -19,8 +17,6 @@ if __name__ == "__main__":
         batch=BATCH,
         device=DEVICE,
         patience=PATIENCE,
-        workers=WORKERS,
-        amp=AMP,
         output_dir="../runs/rf_detr/train_rf-detr-large",
         run_name="v1_rf-detr-large",
         exist_ok=True

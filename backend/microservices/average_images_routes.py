@@ -2,7 +2,6 @@ import os
 import yaml
 from flask import request, jsonify, send_from_directory
 
-# Allowed dataset versions
 ALLOWED_VERSIONS = {"v4", "v5", "v6", "v4.1", "v5.1", "v6.1"}
 
 
@@ -70,7 +69,6 @@ def register_average_images_routes(app):
 
         images = {}
 
-        # Check which average images exist
         for cls in class_names:
             filename = f"average_{cls}.png"
             file_path = os.path.join(avg_dir, filename)

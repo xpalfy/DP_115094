@@ -400,13 +400,11 @@ def register_detect_routes(app):
         use_polygon = request.form.get("usePolygon", "false").lower() == "true"
         confidence = float(request.form.get("confidence", 50)) / 100.0
 
-        # Save file
         os.makedirs("uploads", exist_ok=True)
         filepath = os.path.join("uploads", f"{uuid.uuid4()}_{file.filename}")
         file.save(filepath)
 
         try:
-            # OCR
             if mode == "pytesseract":
                 detections = run_pytesseract(filepath)
 

@@ -8,9 +8,9 @@ from collections import defaultdict
 # ===================================================
 
 DATASETS = {
-    "v4.2": "../../dataset/v4.2",
-    "v5.2": "../../dataset/v5.2",
-    "v6.2": "../../dataset/v6.2"
+    "v4": "../../dataset/v4",
+    "v5": "../../dataset/v5",
+    "v6": "../../dataset/v6"
 }
 
 
@@ -136,7 +136,7 @@ def analyze_dataset(dataset_path):
 
 
 # ===================================================
-# RUN
+# MAIN
 # ===================================================
 
 if __name__ == "__main__":

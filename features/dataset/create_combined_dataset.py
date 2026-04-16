@@ -92,7 +92,6 @@ def convert_dataset(src_root, mapping, dst_root):
 
         new_lines = process_label_file(label_path, mapping)
 
-        # Only save if something remains
         if not new_lines:
             continue
 
@@ -131,17 +130,14 @@ def main():
     mapping_v4 = create_class_mapping(v4_names, common_classes)
     mapping_v5 = create_class_mapping(v5_names, common_classes)
 
-    # Reset output
     if os.path.exists(OUTPUT_PATH):
         shutil.rmtree(OUTPUT_PATH)
 
     os.makedirs(OUTPUT_PATH, exist_ok=True)
 
-    # Convert datasets
     convert_dataset(V4_PATH, mapping_v4, OUTPUT_PATH)
     convert_dataset(V5_PATH, mapping_v5, OUTPUT_PATH)
 
-    # Save new YAML
     out_yaml = {
         "path": OUTPUT_PATH,
         "images": "images",

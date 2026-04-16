@@ -1,4 +1,5 @@
 import os
+import yaml
 from collections import defaultdict
 
 
@@ -29,6 +30,14 @@ def get_files(directory, extension=None):
     return files
 
 
+def load_names(dataset_path):
+    """Load class names from data.yaml."""
+    yaml_path = os.path.join(dataset_path, "data.yaml")
+    with open(yaml_path, "r") as f:
+        data = yaml.safe_load(f)
+    return data["names"]
+
+
 def count_instances(labels_path):
     """Count class instances in a label directory."""
     label_files = get_files(labels_path, ".txt")
@@ -43,7 +52,10 @@ def count_instances(labels_path):
         total_instances += len(lines)
 
         for line in lines:
-            class_id = int(line.split()[0])
+            parts = line.strip().split()
+            if not parts:
+                continue
+            class_id = int(parts[0])
             class_counts[class_id] += 1
 
     return class_counts, total_instances
@@ -57,6 +69,11 @@ def compute_stats(class_counts, total_instances, num_images):
     avg_per_class = total_instances / num_classes if num_classes else 0
 
     return num_classes, avg_per_image, avg_per_class
+
+
+def resolve_name(cls, class_names):
+    """Return class name or fallback to ID string."""
+    return class_names[cls] if cls < len(class_names) else str(cls)
 
 
 # ===================================================
@@ -73,16 +90,9 @@ def analyze_split(split_path):
         return None
 
     image_files = get_files(images_path)
-
     class_counts, total_instances = count_instances(labels_path)
-
     num_images = len(image_files)
-
-    num_classes, avg_img, avg_cls = compute_stats(
-        class_counts,
-        total_instances,
-        num_images
-    )
+    num_classes, avg_img, avg_cls = compute_stats(class_counts, total_instances, num_images)
 
     return {
         "images": num_images,
@@ -98,7 +108,7 @@ def analyze_split(split_path):
 # PRINTING
 # ===================================================
 
-def print_split_stats(split, stats):
+def print_split_stats(split, stats, class_names):
     print(f"\n--- {split.upper()} ---")
     print(f"Images: {stats['images']}")
     print(f"Classes used: {stats['classes']}")
@@ -106,9 +116,14 @@ def print_split_stats(split, stats):
     print(f"Avg instances / image: {stats['avg_img']:.2f}")
     print(f"Avg instances / class: {stats['avg_cls']:.2f}")
 
+    print("Instances per class:")
+    for cls in sorted(stats['class_counts']):
+        name = resolve_name(cls, class_names)
+        print(f"  {name}: {stats['class_counts'][cls]}")
+
 
 def print_total_stats(total_images, total_instances, total_classes,
-                      avg_img, avg_cls, total_class_counts):
+                      avg_img, avg_cls, total_class_counts, class_names):
 
     print("\n--- TOTAL DATASET ---")
     print(f"Images: {total_images}")
@@ -119,7 +134,8 @@ def print_total_stats(total_images, total_instances, total_classes,
 
     print("\nInstances per class:")
     for cls in sorted(total_class_counts):
-        print(f"class {cls}: {total_class_counts[cls]}")
+        name = resolve_name(cls, class_names)
+        print(f"  {name}: {total_class_counts[cls]}")
 
     if total_class_counts:
         print("\nMin class instances:", min(total_class_counts.values()))
@@ -135,6 +151,8 @@ def analyze_dataset(dataset_name, dataset_path):
 
     print(f"\n========== DATASET {dataset_name} ==========")
 
+    class_names = load_names(dataset_path)
+
     total_class_counts = defaultdict(int)
     total_images = 0
     total_instances = 0
@@ -146,7 +164,7 @@ def analyze_dataset(dataset_name, dataset_path):
         if stats is None:
             continue
 
-        print_split_stats(split, stats)
+        print_split_stats(split, stats, class_names)
 
         for cls, count in stats["class_counts"].items():
             total_class_counts[cls] += count
@@ -155,7 +173,6 @@ def analyze_dataset(dataset_name, dataset_path):
         total_instances += stats["instances"]
 
     total_classes = len(total_class_counts)
-
     avg_img_total = total_instances / total_images if total_images else 0
     avg_cls_total = total_instances / total_classes if total_classes else 0
 
@@ -165,12 +182,13 @@ def analyze_dataset(dataset_name, dataset_path):
         total_classes,
         avg_img_total,
         avg_cls_total,
-        total_class_counts
+        total_class_counts,
+        class_names
     )
 
 
 # ===================================================
-# RUN
+# MAIN
 # ===================================================
 
 if __name__ == "__main__":

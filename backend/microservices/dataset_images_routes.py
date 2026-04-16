@@ -71,7 +71,6 @@ def register_dataset_images_routes(app):
                 "label_dir": label_dir
             }), 404
 
-        # Collect image files
         img_files = [
             f for f in os.listdir(img_dir)
             if f.lower().endswith((".jpg", ".jpeg", ".png"))
@@ -98,7 +97,6 @@ def register_dataset_images_routes(app):
                 os.path.splitext(filename)[0] + ".txt"
             )
 
-            # Read annotation file if exists
             if os.path.exists(label_path):
                 with open(label_path) as f:
                     for line in f:
@@ -108,7 +106,6 @@ def register_dataset_images_routes(app):
 
                         coords = list(map(float, parts[1:]))
 
-                        # Convert normalized coords to pixel coords
                         polygon = [
                             [
                                 int(coords[i] * w),

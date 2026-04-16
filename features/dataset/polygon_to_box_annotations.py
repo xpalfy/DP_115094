@@ -90,11 +90,9 @@ def process_split(split):
     ensure_dir(dst_img_dir)
     ensure_dir(dst_lbl_dir)
 
-    # Copy images
     if COPY_IMAGES:
         copy_images(src_img_dir, dst_img_dir)
 
-    # Convert labels
     for file in os.listdir(src_lbl_dir):
         if not file.endswith(".txt"):
             continue
