@@ -153,9 +153,9 @@ def show_examples(examples, class_map):
 # ===================================================
 
 def main():
-    CLASS_MAP = load_class_map(NOTES_PATH)
+    class_map = load_class_map(NOTES_PATH)
     examples = collect_examples()
-    show_examples(examples, CLASS_MAP)
+    show_examples(examples, class_map)
 
 
 if __name__ == "__main__":

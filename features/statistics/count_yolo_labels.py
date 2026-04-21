@@ -133,11 +133,11 @@ def plot_class_distribution(class_counts, class_map):
 # ===================================================
 def main():
     cfg = load_dataset_config(DATA_YAML_PATH)
-    BASE_DIR, IMAGES_DIR, LABEL_DIR, CLASS_MAP = parse_dataset_config(cfg)
-    print_dataset_info(BASE_DIR, IMAGES_DIR, LABEL_DIR)
-    class_counts = count_classes(LABEL_DIR)
-    print_class_counts(class_counts, CLASS_MAP)
-    plot_class_distribution(class_counts, CLASS_MAP)
+    base_dir, images_dir, label_dir, class_map = parse_dataset_config(cfg)
+    print_dataset_info(base_dir, images_dir, label_dir)
+    class_counts = count_classes(label_dir)
+    print_class_counts(class_counts, class_map)
+    plot_class_distribution(class_counts, class_map)
 
 
 if __name__ == "__main__":

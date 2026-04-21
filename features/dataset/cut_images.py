@@ -53,7 +53,7 @@ def load_annotations(label_path):
         return f.readlines()
 
 
-def parse_polygon(parts, W, H):
+def parse_polygon(parts, w, h):
     """Convert YOLO polygon → pixel coordinates."""
     coords = np.array(parts[1:], dtype=np.float32)
 
@@ -61,8 +61,8 @@ def parse_polygon(parts, W, H):
         return None
 
     poly = coords.reshape(-1, 2)
-    poly[:, 0] *= W
-    poly[:, 1] *= H
+    poly[:, 0] *= w
+    poly[:, 1] *= h
 
     return poly
 
@@ -100,16 +100,16 @@ def process_image(image_file):
         print(f"Could not read image: {image_path}")
         return
 
-    H, W = image.shape[:2]
+    h, w = image.shape[:2]
 
-    tile_size = int(round(W * TILE_RATIO))
-    tile_size = max(MIN_TILE, min(tile_size, W, H))
+    tile_size = int(round(w * TILE_RATIO))
+    tile_size = max(MIN_TILE, min(tile_size, w, h))
 
     overlap = int(round(tile_size * OVERLAP_RATIO))
     overlap = max(MIN_OVERLAP, min(overlap, tile_size - 1))
 
-    x_steps = compute_steps(W, tile_size, overlap)
-    y_steps = compute_steps(H, tile_size, overlap)
+    x_steps = compute_steps(w, tile_size, overlap)
+    y_steps = compute_steps(h, tile_size, overlap)
 
     label_file = os.path.splitext(image_file)[0] + ".txt"
     label_path = os.path.join(LABELS_DIR, label_file)
@@ -122,7 +122,7 @@ def process_image(image_file):
             y_end = y_start + tile_size
             x_end = x_start + tile_size
 
-            if y_end > H or x_end > W:
+            if y_end > h or x_end > w:
                 continue
 
             new_annotations = []
@@ -133,7 +133,7 @@ def process_image(image_file):
                     continue
 
                 class_id = parts[0]
-                poly = parse_polygon(parts, W, H)
+                poly = parse_polygon(parts, w, h)
                 if poly is None:
                     continue
 

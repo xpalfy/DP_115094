@@ -24,18 +24,18 @@ IOU_THRESHOLD = 0.5
 # IOU
 # ===================================================
 
-def compute_iou(boxA, boxB):
-    xA = max(boxA[0], boxB[0])
-    yA = max(boxA[1], boxB[1])
-    xB = min(boxA[0]+boxA[2], boxB[0]+boxB[2])
-    yB = min(boxA[1]+boxA[3], boxB[1]+boxB[3])
+def compute_iou(box_a, box_b):
+    x_a = max(box_a[0], box_b[0])
+    y_a = max(box_a[1], box_b[1])
+    x_b = min(box_a[0] + box_a[2], box_b[0] + box_b[2])
+    y_b = min(box_a[1] + box_a[3], box_b[1] + box_b[3])
 
-    inter = max(0, xB - xA) * max(0, yB - yA)
+    inter = max(0, x_b - x_a) * max(0, y_b - y_a)
 
-    areaA = boxA[2] * boxA[3]
-    areaB = boxB[2] * boxB[3]
+    area_a = box_a[2] * box_a[3]
+    area_b = box_b[2] * box_b[3]
 
-    union = areaA + areaB - inter
+    union = area_a + area_b - inter
 
     return inter / union if union > 0 else 0
 
