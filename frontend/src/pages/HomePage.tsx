@@ -46,9 +46,9 @@ const HomePage: React.FC = () => {
                 margin: "0 auto",
               }}
             >
-              Master's thesis project exploring deep learning models for
-              detecting handwritten characters in historical German and French
-              manuscripts.
+              Master's thesis project comparing modern deep learning models for
+              detecting and segmenting handwritten characters in historical
+              German and French manuscripts.
             </Typography>
 
             <Typography
@@ -127,15 +127,18 @@ const HomePage: React.FC = () => {
                 </Typography>
 
                 <Typography>
-                  The goal of this thesis is to develop algorithms capable of
-                  detecting and segmenting letters in historical handwritten
-                  manuscripts containing German and French texts.
+                  The goal of this thesis is to develop and compare algorithms
+                  capable of detecting and segmenting individual letters in
+                  unencrypted historical handwritten manuscripts written in
+                  German and French.
                 </Typography>
 
                 <Typography sx={{ mt: 2 }}>
-                  Historical manuscripts present major challenges for modern OCR
-                  systems due to inconsistent handwriting styles, variations in
-                  letter quality, and high intra-class variability.
+                  Historical manuscripts are challenging to process due to
+                  varying handwriting styles, document quality, and the visual
+                  similarity between certain characters. The work focuses on
+                  small lowercase letters, which form the majority of the text
+                  in these documents.
                 </Typography>
               </Box>
             </Box>
@@ -152,25 +155,30 @@ const HomePage: React.FC = () => {
             </Typography>
 
             <Typography sx={{ mb: 2 }}>
-              This work extends the research of Ing. Dagmar Trabalíková, who
-              developed an initial handwritten character recognition system.
+              This work builds on the previous master's thesis of Ing. Dagmar
+              Trabalíková, whose results on the German dataset are reproduced
+              and extended in this project.
             </Typography>
 
             <Box sx={{ ml: 2 }}>
               <Typography>
-                • Expansion of annotated German manuscript datasets
+                • Extension of the existing German manuscript dataset with
+                additional annotated samples
               </Typography>
               <Typography>
-                • Creation of annotated French manuscript datasets
+                • Creation of a new annotated French manuscript dataset
               </Typography>
               <Typography>
-                • Training deep learning detection and segmentation models
+                • Construction of a combined multilingual dataset from both
+                sources
               </Typography>
               <Typography>
-                • Evaluation on individual and combined datasets
+                • Training and evaluation of detection and segmentation models
+                on each dataset separately and on the combined dataset
               </Typography>
               <Typography>
-                • Development of a web interface for model testing
+                • Development of a web application for testing trained models
+                and visualizing their outputs
               </Typography>
             </Box>
 
@@ -186,22 +194,33 @@ const HomePage: React.FC = () => {
             </Typography>
 
             <Typography>
-              Several modern deep learning architectures are explored:
+              Two families of modern deep learning models are compared:
             </Typography>
 
             <Box sx={{ ml: 2, mt: 2 }}>
-              <Typography>• YOLOv8 object detection models</Typography>
               <Typography>
-                • YOLO11 and YOLO26 experimental architectures
+                • YOLO models — YOLOv8, YOLO11, and YOLO26 for both detection
+                and segmentation, and the experimental YOLO12 for detection only
               </Typography>
               <Typography>
-                • RF-DETR transformer-based detection model
+                • RF-DETR — a transformer-based model used for both detection
+                and segmentation
               </Typography>
             </Box>
 
             <Typography sx={{ mt: 2 }}>
-              The models are trained on German and French datasets independently
-              and evaluated on a combined multilingual dataset.
+              YOLO models were trained on the German, French, and combined
+              datasets, while RF-DETR was trained only on the combined dataset
+              due to the higher data requirements of transformer architectures.
+              Each model was evaluated on the test set of the dataset it was
+              trained on.
+            </Typography>
+
+            <Typography sx={{ mt: 2 }}>
+              For inference on full-page documents, the SAHI technique is used
+              to split large images into smaller tiles, which allows the models
+              to detect characters that would otherwise be too small relative to
+              the model's input size.
             </Typography>
 
             <Divider sx={{ my: 6 }} />
@@ -244,14 +263,33 @@ const HomePage: React.FC = () => {
             </Typography>
 
             <Typography>
-              This web application allows users to upload historical manuscript
-              images and test trained AI models for letter detection and
-              segmentation.
+              The web application provides a complete environment for working
+              with the trained models and the underlying datasets:
             </Typography>
 
+            <Box sx={{ ml: 2, mt: 2 }}>
+              <Typography>
+                • Inference — uploading images and running selected models with
+                adjustable confidence threshold, optional SAHI processing, and
+                segmentation masks where available
+              </Typography>
+              <Typography>
+                • Dataset statistics — class distribution, train/val/test splits
+                and basic information for each dataset version
+              </Typography>
+              <Typography>
+                • Sample images — viewing original manuscript images together
+                with their annotations
+              </Typography>
+              <Typography>
+                • Average shapes — visual comparison of typical letter shapes
+                across datasets
+              </Typography>
+            </Box>
+
             <Typography sx={{ mt: 2 }}>
-              The system visualizes detected characters, segmentation masks, and
-              allows filtering of detected classes to analyze model performance.
+              Detection results can be filtered by individual classes, which
+              makes it easier to inspect model behaviour on specific characters.
             </Typography>
           </Paper>
         </Box>
