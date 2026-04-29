@@ -1,51 +1,51 @@
-# Detekcia a segmentácia písmen v historických rukopisoch
+# Detection and Segmentation of Letters in Historical Manuscripts
 
-**Diplomová práca – Slovenská technická univerzita v Bratislave**  
-Fakulta elektrotechniky a informatiky (FEI)  
-Ústav informatiky a matematiky  
-Akademický rok: 2025/2026  
+**Master's Thesis – Slovak University of Technology in Bratislava**  
+Faculty of Electrical Engineering and Information Technology (FEI)  
+Institute of Informatics and Mathematics  
+Academic Year: 2025/2026  
 
 ---
 
-## Autor
+## Author
 
 **Bc. Vincent Pálfy**  
-Študijný program: aplikovaná informatika  
-Študijný odbor: informatika  
-Evidenčné číslo: FEI-16607-115094  
-ID študenta: 115094  
+Study Programme: Applied Informatics  
+Field of Study: Informatics  
+Reference Number: FEI-16607-115094  
+Student ID: 115094  
 
-Vedúci práce: Ing. Pavol Marák, PhD.  
-Vedúci pracoviska: doc. Ing. Milan Vojvoda, PhD.
-
----
-
-## Popis projektu
-
-Cieľom diplomovej práce je vyvinúť a otestovať algoritmus na detekciu a segmentáciu písmen v historických rukopisoch. Práca je zameraná na rukopisy obsahujúce nešifrovaný text napísaný v nemeckom a francúzskom jazyku.
-
-Historické rukopisné dokumenty predstavujú náročný problém pre súčasné OCR metódy najmä z dôvodu rozdielnej kvality zápisu, vysokej vnútrotriednej variability písmen, rôznej frekvencie výskytu znakov a odlišných grafických štýlov. Významnú úlohu zohráva aj poškodenie dokumentov, šum a celková nejednotnosť vizuálnej podoby rukopisov.
-
-Projekt nadväzuje na diplomovú prácu **Ing. Dagmar Trabalíkovej**, ktorá vytvorila prvotný systém na rozpoznávanie písmen v historických rukopisoch.
+Thesis Supervisor: Ing. Pavol Marák, PhD.  
+Head of Department: doc. Ing. Milan Vojvoda, PhD.
 
 ---
 
-## Hlavné úlohy práce
+## Project Description
 
-1. Naštudovať a popísať problematiku historických rukopisov, modelov YOLO a RF-DETR.
-2. Analyzovať a zdokumentovať existujúce riešenia v skúmanej oblasti.
-3. Reprodukovať výsledky diplomovej práce Ing. Dagmar Trabalíkovej.
-4. Vytvoriť a analyzovať datasety obsahujúce anotácie písmen z nešifrovaných nemeckých a francúzskych dokumentov.
-5. Zvoliť vhodné YOLO a RF-DETR modely na detekciu a segmentáciu a natrénovať ich na jednotlivých datasetoch samostatne, ako aj na zlúčenom datasete.
-6. Vytvoriť webovú aplikáciu na testovanie modelov a vizualizáciu výsledkov.
-7. Vyhodnotiť úspešnosť experimentov.
-8. Vypracovať písomnú dokumentáciu.
+The aim of this master's thesis is to develop and test an algorithm for the detection and segmentation of letters in historical manuscripts. The work focuses on manuscripts containing unencrypted text written in German and French.
+
+Historical handwritten documents present a challenging problem for current OCR methods, primarily due to varying writing quality, high intra-class variability of letters, different character frequencies, and diverse graphical styles. Document damage, noise, and the overall visual inconsistency of manuscripts also play a significant role.
+
+The project builds upon the master's thesis of **Ing. Dagmar Trabalíková**, who created the initial system for recognizing letters in historical manuscripts.
 
 ---
 
-## Použité technológie
+## Main Tasks
 
-Projekt je implementovaný najmä pomocou nasledujúcich technológií a nástrojov:
+1. Study and describe the topic of historical manuscripts and the YOLO and RF-DETR models.
+2. Analyze and document existing solutions in the field.
+3. Reproduce the results of the master's thesis by Ing. Dagmar Trabalíková.
+4. Create and analyze datasets containing letter annotations from unencrypted German and French documents.
+5. Select appropriate YOLO and RF-DETR models for detection and segmentation, and train them on individual datasets separately as well as on the merged dataset.
+6. Develop a web application for testing models and visualizing results.
+7. Evaluate the success of the experiments.
+8. Prepare written documentation.
+
+---
+
+## Technologies Used
+
+The project is implemented primarily using the following technologies and tools:
 
 - Python
 - PyTorch
@@ -63,51 +63,51 @@ Projekt je implementovaný najmä pomocou nasledujúcich technológií a nástro
 
 ---
 
-## Datasety
+## Datasets
 
-Projekt pracuje s historickými rukopismi obsahujúcimi nešifrovaný text v
+The project works with historical manuscripts containing unencrypted text in:
 
-- nemeckom jazyku,
-- francúzskom jazyku.
+- German,
+- French.
 
-V rámci riešenia sa využívajú viaceré verzie datasetov vytvorené počas prípravy a spracovania dát. Anotácie sú vytvorené vo formátoch kompatibilných s modelmi YOLO a RF-DETR. Súčasťou projektu sú samostatné datasety pre nemecké a francúzske dokumenty, ako aj ich kombinovaná verzia.
-
----
-
-## Webová aplikácia
-
-Súčasťou projektu je webová aplikácia určená na:
-
-- testovanie detekčných a segmentačných modelov,
-- porovnanie rôznych režimov spracovania,
-- zobrazenie priemerných tvarov písmen,
-- prehliadanie ukážkových obrázkov datasetu s anotáciami,
-- zobrazenie štatistík datasetov,
-- vizualizáciu výsledkov inferencie na používateľom nahratých obrázkoch.
-
-Aplikácia pozostáva z backendovej časti implementovanej vo frameworku Flask a frontendovej časti implementovanej pomocou Reactu.
+Multiple versions of datasets created during data preparation and processing are used throughout the project. Annotations are produced in formats compatible with YOLO and RF-DETR models. The project includes separate datasets for German and French documents, as well as a combined version.
 
 ---
 
-## Spustenie projektu
+## Web Application
 
-Na spustenie projektu je potrebné mať nainštalovaný nástroj Docker Desktop. Inštalačný balík pre Windows je dostupný na oficiálnej stránke:
+The project includes a web application designed for:
+
+- Testing detection and segmentation models,
+- Comparing different processing modes,
+- Displaying average letter shapes,
+- Browsing sample dataset images with annotations,
+- Displaying dataset statistics,
+- Visualizing inference results on user-uploaded images.
+
+The application consists of a backend implemented in the Flask framework and a frontend implemented using React.
+
+---
+
+## Running the Project
+
+Docker Desktop must be installed to run the project. The installation package for Windows is available on the official website:
 
 https://docs.docker.com/desktop/setup/install/windows-install/
 
-Po otvorení koreňového priečinka projektu je možné aplikáciu spustiť príkazom:
+After opening the root project folder, the application can be started with the command:
 
 ```bash
 docker compose up --build
 ```
 
-Po úspešnom spustení je webová aplikácia dostupná na adrese:
+Once successfully started, the web application is accessible at:
 
-```text
+```
 http://localhost:3000
 ```
 
-Po ukončení práce je možné kontajnery zastaviť príkazom:
+To stop the containers after use, run:
 
 ```bash
 docker compose down
@@ -115,18 +115,18 @@ docker compose down
 
 ---
 
-## Štruktúra projektu
+## Project Structure
 
-Projekt obsahuje najmä tieto hlavné časti:
+The project contains the following main components:
 
-- `backend/` – backendová časť aplikácie a API endpointy
-- `frontend/` – frontendová časť aplikácie a používateľské rozhranie
-- `features/` – pomocné skripty na spracovanie dát, štatistiky a vizualizáci,
-- `dataset/` – anotované datasety pre nemecké a francúzske dokumenty
+- `backend/` – backend part of the application and API endpoints
+- `frontend/` – frontend part of the application and user interface
+- `features/` – helper scripts for data processing, statistics, and visualization
+- `dataset/` – annotated datasets for German and French documents
 
 ---
 
-## Literatúra
+## References
 
 - Antal, E. et al. *Encrypted Documents and Cipher Keys From the 18th and 19th Century in the Archives of Aristocratic Families in Slovakia.* International Conference on Historical Cryptology, 2023.
 - Antal, E. et al. *HHCS: A Dataset of Cipher Symbol Annotations From Handwritten Historical Encrypted Documents for Machine Learning Tasks.* IEEE Access, 2026.
@@ -134,10 +134,10 @@ Projekt obsahuje najmä tieto hlavné časti:
 
 ---
 
-## Výskumný projekt
+## Research Project
 
-Diplomová práca je zapojená do riešenia výskumného projektu:
+This master's thesis is part of the following research project:
 
-**Využitie umelej inteligencie na spracovanie šifrovaných rukopisov**  
-Kód projektu: **09I05-03-V02-00031**  
-Program: **Plán obnovy a odolnosti SR**
+**Using Artificial Intelligence for Processing Encrypted Manuscripts**  
+Project Code: **09I05-03-V02-00031**  
+Programme: **Recovery and Resilience Plan of the Slovak Republic**
