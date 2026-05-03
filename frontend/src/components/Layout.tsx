@@ -149,10 +149,13 @@ const Layout = () => {
   const handleDrawerClose = () => dispatch(closeSidebar());
 
   return (
-    <>
+    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <Header />
       <Sidebar open={open} onClose={handleDrawerClose} />
-      <Box component="main">
+      <Box
+        component="main"
+        sx={{ flex: 1, display: "flex", flexDirection: "column" }}
+      >
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/yolo8-german" element={<Yolo8PageGerman />} />
@@ -199,7 +202,7 @@ const Layout = () => {
           <Route path="/statistics" element={<StatisticsPage />} />
         </Routes>
       </Box>
-    </>
+    </Box>
   );
 };
 

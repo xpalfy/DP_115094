@@ -106,7 +106,7 @@ const AverageImagesPage: React.FC = () => {
 
       <Box
         sx={{
-          minHeight: "calc(100vh - 65px)",
+          flex: 1,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -161,7 +161,6 @@ const AverageImagesPage: React.FC = () => {
               </Select>
             </FormControl>
 
-            {/* VERSION SELECT */}
             <FormControl sx={{ minWidth: 160 }}>
               <InputLabel>Version</InputLabel>
               <Select

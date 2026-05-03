@@ -33,7 +33,7 @@ CLASS_NAMES = [
 # ===================================================
 # OCR
 # ===================================================
-
+# Pytesseract for non-container environments
 # pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
 easyocr_reader = easyocr.Reader(["en"], gpu=torch.cuda.is_available())

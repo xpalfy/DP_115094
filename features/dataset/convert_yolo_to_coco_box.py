@@ -158,7 +158,7 @@ def main():
     for split in splits:
         convert_split(dataset_root, split, output_root, classes)
 
-    print("\nDataset conversion finished.")
+    print("\nv6.5_coco dataset created successfully.")
     print("Output:", output_root)
 
 

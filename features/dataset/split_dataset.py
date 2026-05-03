@@ -99,7 +99,7 @@ def main():
     for split, files in split_map.items():
         process_split(split, files)
 
-    print("\nDataset split completed")
+    print("\nv6.4 dataset created successfully.")
     print(f"Train images: {len(split_map['train'])}")
     print(f"Validation images: {len(split_map['val'])}")
     print(f"Test images: {len(split_map['test'])}")

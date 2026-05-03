@@ -156,7 +156,7 @@ def main():
     for split in get_splits(cfg):
         convert_split(dataset_root, split, output_root, classes)
 
-    print("\nPolygon dataset conversion finished.")
+    print("\nv6.4_coco_seg dataset created successfully.")
     print("Output:", output_root)
 
 

@@ -72,6 +72,8 @@ The project works with historical manuscripts containing unencrypted text in:
 
 Multiple versions of datasets created during data preparation and processing are used throughout the project. Annotations are produced in formats compatible with YOLO and RF-DETR models. The project includes separate datasets for German and French documents, as well as a combined version.
 
+The image data of the processed historical documents is not available in the GitHub repository, as it cannot be publicly shared due to copyright restrictions. A limited portion of the image data is included only in the version submitted to AIS.
+
 ---
 
 ## Web Application
@@ -91,26 +93,104 @@ The application consists of a backend implemented in the Flask framework and a f
 
 ## Running the Project
 
-Docker Desktop must be installed to run the project. The installation package for Windows is available on the official website:
+### Docker Installation
 
-https://docs.docker.com/desktop/setup/install/windows-install/
+Before running the application for the first time, Docker and Docker Compose must be installed on the device. Installation packages are available on the official Docker website:
 
-After opening the root project folder, the application can be started with the command:
+https://www.docker.com/products/docker-desktop/
+
+For Windows and macOS, it is recommended to install **Docker Desktop**, which already includes Docker Compose. On Linux, Docker Engine and Docker Compose can be installed separately using the official repository of the relevant distribution. After installation, Docker must be started and its functionality verified using the command:
 
 ```bash
-docker compose up --build
+docker --version
 ```
 
-Once successfully started, the web application is accessible at:
+Docker Compose functionality can be verified with:
+
+```bash
+docker compose version
+```
+
+### Preparation of Trained Models
+
+The trained models are not part of the GitHub repository or the submitted ZIP archive due to their size. For the application to work correctly, they must be downloaded separately from the following link:
+
+https://drive.google.com/drive/folders/1MR6I3FUrrvdnipNODqys6tQlXCxMnlVs?usp=drive_link
+
+After downloading, the folder named `DP_115094_models` must be renamed to `runs`. If the folder with models is downloaded in multiple parts, these parts must first be merged into a single folder so that it contains all the necessary model files. The `runs` folder is then placed into the `backend` folder, which is located in the root directory of the project. The resulting structure must be as follows:
+
+```
+backend/runs
+```
+
+After correctly placing the `runs` folder, the trained models will be available to the backend part of the application and inference on uploaded images will be possible.
+
+### Starting the Application
+
+Before starting the application, Docker must be running after installation. The application offers two options for starting: a basic **CPU version** and an optional **GPU version** with CUDA support.
+
+#### CPU Version
+
+The basic CPU version is intended for ordinary devices and does not require an NVIDIA graphics card. This version is recommended in case the user does not have a configured environment for running Docker containers with GPU support. The application is started from the root directory of the project using the command:
+
+```bash
+docker compose -f docker-compose.cpu.yaml up --build
+```
+
+#### GPU Version
+
+The GPU version is intended for devices with an NVIDIA GPU and properly configured CUDA support in the Docker environment. It is started using the command:
+
+```bash
+docker compose -f docker-compose.gpu.yaml up --build
+```
+
+To run the GPU version, the following are required:
+
+- NVIDIA GPU,
+- current NVIDIA driver,
+- functional WSL2 environment in case of Windows,
+- enabled WSL Integration in Docker Desktop,
+- GPU support in Docker containers.
+
+GPU functionality can be verified with:
+
+```bash
+nvidia-smi
+```
+
+GPU support in Docker can be verified with:
+
+```bash
+docker run --rm --gpus all nvidia/cuda:12.1.0-base-ubuntu22.04 nvidia-smi
+```
+
+### Accessing the Application
+
+After successful build and startup of the containers, the web application is accessible at:
 
 ```
 http://localhost:3000
 ```
 
+The backend API interface is accessible at:
+
+```
+http://localhost:5000
+```
+
+### Stopping the Application
+
 To stop the containers after use, run:
 
 ```bash
-docker compose down
+docker compose -f docker-compose.cpu.yaml down
+```
+
+Or for the GPU version:
+
+```bash
+docker compose -f docker-compose.gpu.yaml down
 ```
 
 ---

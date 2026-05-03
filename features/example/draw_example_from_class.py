@@ -126,20 +126,16 @@ def show_examples(examples, class_map):
         polygon_px = normalize_to_pixels(polygon_norm, w, h)
         bbox = polygon_to_bbox(polygon_px)
 
-        # ===== CROPS =====
         poly_crop = extract_polygon_object(img, polygon_px)
         bbox_crop = extract_bbox_object(img, bbox)
 
-        # ===== SHOW =====
         plt.figure(figsize=(8, 4))
 
-        # Polygon crop
         plt.subplot(1, 2, 1)
         plt.imshow(poly_crop)
         plt.title("Polygon")
         plt.axis("off")
 
-        # BBox crop
         plt.subplot(1, 2, 2)
         plt.imshow(bbox_crop)
         plt.title("BBox")

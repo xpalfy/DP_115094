@@ -249,7 +249,7 @@ def main():
     # -------------------------
     # SUMMARY
     # -------------------------
-    print("\nDONE")
+    print("\nv6.1 dataset successfully created.")
     print(f"Written labels: {written_labels}")
     print(f"Copied images: {copied_images}")
 

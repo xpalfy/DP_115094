@@ -47,6 +47,7 @@ def load_model():
         device=DEVICE
     )
 
+    # RFDETRSegSmall for segmentation
     # model = RFDETRSegSmall(
     #     pretrain_weights=MODEL_PATH,
     #     num_classes=len(CLASS_NAMES),

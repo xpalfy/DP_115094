@@ -195,7 +195,7 @@ const StatisticsPage: React.FC = () => {
 
       <Box
         sx={{
-          minHeight: "calc(100vh - 65px)",
+          flex: 1,
           background:
             "linear-gradient(135deg, #11998e 0%, #43cea2 50%, #38ef7d 100%)",
           py: 10,

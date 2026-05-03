@@ -85,7 +85,7 @@ const SampleImagesPage: React.FC = () => {
 
       <Box
         sx={{
-          minHeight: "calc(100vh - 65px)",
+          flex: 1,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",

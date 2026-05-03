@@ -163,7 +163,7 @@ def main():
         if image_file.lower().endswith((".jpg", ".jpeg", ".png")):
             process_image(image_file)
 
-    print("Done: v6.1 -> v6.2 slicing completed. Only annotated tiles were saved.")
+    print("v6.2 dataset successfully created.")
 
 
 if __name__ == "__main__":

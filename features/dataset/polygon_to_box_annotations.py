@@ -106,3 +106,4 @@ def process_split(split):
 if __name__ == "__main__":
     for split in SPLITS:
         process_split(split)
+    print("\nv6.5 dataset created successfully.")
